@@ -1,36 +1,133 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CORE BRIM TECH OS
+
+An autonomous operating system for founders. Built to run 24/7, minimize costs, and maximize output.
+
+## What It Is
+
+CORE BRIM TECH OS is a comprehensive founder dashboard with 25+ integrated modules:
+
+- **Intelligence**: Founder Brain, Competitor Intel, Deep Research Engine
+- **Build**: Hackathon Builder, Auto-Scout
+- **Operations**: Goals & OKRs, Session Brain, Focus Mode
+- **Money**: Revenue Tracking, Grant Tracker, Invoice Generator
+- **Autonomous**: Skill Engine, Away Mode, Scheduler
+- **Reports**: Weekly Reports, Investor View, API Cost Optimizer
+
+## Key Features
+
+### 80-90% API Cost Savings
+The API Cost Optimizer helps users achieve massive savings through:
+- Smart model routing (Haiku/Sonnet/Opus/Gemini)
+- Aggressive caching (7-day TTL)
+- Background task batching
+- Gemini free tier preference
+- Budget guardrails with auto-downgrade
+
+### Real Data Only
+No mock data. No auto-populated examples. The OS only works with:
+- Your tracked grants (not discovery database)
+- Your actual clients and pipeline
+- Your created goals and milestones
+- Your research and decisions
+
+### Autonomous 24/7 Operation
+- Background task queue for non-urgent operations
+- Automatic cost optimization
+- Smart notifications only from real deadlines
+- Supabase sync for cross-device persistence
+
+## Tech Stack
+
+- **Framework**: Next.js 16 + React 19
+- **Styling**: Tailwind CSS 4 + shadcn/ui
+- **AI**: Anthropic Claude + Google Gemini
+- **Database**: Supabase (PostgreSQL)
+- **State**: localStorage with cloud sync
 
 ## Getting Started
 
-First, run the development server:
-
+1. Clone and install:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repo>
+cd corebrimtech-os
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Set up environment variables in `.env.local`:
+```
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_key
+ANTHROPIC_API_KEY=your_claude_key
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Run the development server:
+```bash
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Open http://localhost:3000
 
-## Learn More
+5. First step: Complete **Founder Brain** setup so the OS knows your company context
 
-To learn more about Next.js, take a look at the following resources:
+## Architecture
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+![CORE BRIM TECH OS Architecture](/cbt-os-architecture.png)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The OS is built around the **Founder Brain** - the central intelligence that feeds context to all AI-powered modules. Data flows through:
 
-## Deploy on Vercel
+1. **Intelligence Layer** (Claude + Gemini) - AI processing with smart model routing
+2. **Founder Brain** - Central company knowledge store
+3. **Operations** - Goals, sessions, focus mode, SOPs
+4. **Revenue & Grants** - Money tracking and opportunity discovery
+5. **API Cost Optimizer** - 80-90% savings through caching and batching
+6. **Build & Auto-Scout** - Hackathon builder and opportunity finder
+7. **Supabase** - Cloud sync for cross-device persistence
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+All modules run 24/7 with autonomous background processing.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Project Structure
+
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── api/               # API routes
+│   ├── layout.tsx         # Root layout
+│   ├── page.tsx           # Main dashboard
+│   └── globals.css        # Global styles
+├── components/            # React components
+│   ├── ui/                # shadcn/ui components
+│   ├── brain/             # Founder Brain
+│   ├── optimizer/         # API Cost Optimizer
+│   ├── money/             # Revenue, Grants, Invoices
+│   └── ... (20+ modules)
+└── lib/                   # Business logic
+    ├── api-optimizer.ts   # Cost optimization engine
+    ├── supabase.ts        # Database layer
+    ├── founder-brain.ts   # Core company data
+    └── ... (20+ modules)
+```
+
+## Development
+
+```bash
+npm run dev      # Start dev server
+npm run build    # Production build
+npm run lint     # Run ESLint
+```
+
+## Deployment
+
+Deploy on Vercel:
+```bash
+vercel --prod
+```
+
+Or build and host anywhere:
+```bash
+npm run build
+# Output in .next/ directory
+```
+
+## License
+
+Private - Core Brim Tech Internal Use
