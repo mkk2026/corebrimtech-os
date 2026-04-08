@@ -3,6 +3,8 @@
  * Provider and keys from Settings (localStorage). Used by Skills and Cost Optimizer.
  */
 
+import { proxyHeaders } from "@/lib/proxy";
+
 const ANTHROPIC_KEY_STORAGE = "cbt_os_anthropic_api_key";
 const GOOGLE_KEY_STORAGE = "cbt_os_google_api_key";
 const AI_PROVIDER_KEY = "cbt_os_ai_provider";
@@ -61,7 +63,7 @@ async function completeWithClaude(_apiKey: string, opts: LLMCompleteOptions): Pr
   try {
     const res = await fetch("/api/ai", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: proxyHeaders(),
       body: JSON.stringify({
         provider: "claude",
         prompt: opts.prompt,
@@ -93,7 +95,7 @@ async function completeWithGoogle(_apiKey: string, opts: LLMCompleteOptions): Pr
   try {
     const res = await fetch("/api/ai", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: proxyHeaders(),
       body: JSON.stringify({
         provider: "google",
         prompt: opts.systemPrompt ? `${opts.systemPrompt}\n\n${opts.prompt}` : opts.prompt,

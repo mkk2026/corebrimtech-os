@@ -8,5 +8,12 @@ export async function GET() {
     process.env.ANTHROPIC_API_KEY !== "your_claude_api_key" &&
     process.env.ANTHROPIC_API_KEY.length > 10;
 
-  return NextResponse.json({ anthropicConfigured });
+  const googleConfigured =
+    !!process.env.GOOGLE_API_KEY &&
+    process.env.GOOGLE_API_KEY !== "your_gemini_api_key" &&
+    process.env.GOOGLE_API_KEY.length > 10;
+
+  const proxySecretConfigured = !!process.env.API_PROXY_SECRET;
+
+  return NextResponse.json({ anthropicConfigured, googleConfigured, proxySecretConfigured });
 }

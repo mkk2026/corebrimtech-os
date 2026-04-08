@@ -1,6 +1,7 @@
 // CORE BRIM TECH OS — Hackathon Auto-Scout
 // Scans for hackathons daily, scores them, surfaces only the winnable ones
 
+import { proxyHeaders } from "@/lib/proxy";
 import { fetchWithTimeout, getAnthropicError } from "./anthropic";
 
 export interface HackathonListing {
@@ -320,9 +321,7 @@ async function runRealScout(founderContext: string, apiKey: string): Promise<Hac
     "/api/ai",
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: proxyHeaders(),
       body: JSON.stringify({
         provider: "claude",
         model: "claude-sonnet-4-20250514",

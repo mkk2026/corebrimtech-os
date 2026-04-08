@@ -1,6 +1,7 @@
 // CORE BRIM TECH OS — Deep Research Engine v2.0
 // 500+ sources · 20 sub-queries · 10 depth levels · 30 findings · Recursive gap filling
 
+import { proxyHeaders } from "@/lib/proxy";
 import { fetchWithTimeout, getAnthropicError } from "./anthropic";
 
 export interface SearchResult {
@@ -429,7 +430,7 @@ async function generateSubQueriesWithClaude(topic: string, apiKey: string): Prom
     "/api/ai",
     {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: proxyHeaders(),
       body: JSON.stringify({
         provider: "claude",
         model: "claude-sonnet-4-20250514",
@@ -454,7 +455,7 @@ async function searchWithClaudeOneBatch(
     "/api/ai",
     {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: proxyHeaders(),
       body: JSON.stringify({
         provider: "claude",
         model: "claude-sonnet-4-20250514",
@@ -481,7 +482,7 @@ async function synthesizeWithClaude(topic: string, sources: SearchResult[], apiK
     "/api/ai",
     {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: proxyHeaders(),
       body: JSON.stringify({
         provider: "claude",
         model: "claude-sonnet-4-20250514",
@@ -502,7 +503,7 @@ async function generateFindingsWithClaude(topic: string, sources: SearchResult[]
     "/api/ai",
     {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: proxyHeaders(),
       body: JSON.stringify({
         provider: "claude",
         model: "claude-sonnet-4-20250514",

@@ -113,7 +113,6 @@ Respond in JSON format:
       task: "custom",
       prompt,
       maxTokens: 800,
-      apiKey,
     });
     
     // Extract JSON from response
@@ -188,7 +187,6 @@ Write in a warm, professional tone. Not corporate-speak. Show expertise without 
     task: "custom",
     prompt,
     maxTokens: 1500,
-    apiKey,
   });
   
   // Parse sections (simple extraction)
@@ -245,7 +243,6 @@ Subject line should be intriguing but not clickbait.`;
     task: "custom",
     prompt,
     maxTokens: 600,
-    apiKey,
   });
   
   // Extract subject and body
@@ -283,7 +280,6 @@ Questions should be open-ended and conversational.`;
     task: "custom",
     prompt,
     maxTokens: 500,
-    apiKey,
   });
   
   return response
@@ -325,7 +321,6 @@ Respond in JSON format.`;
       task: "custom",
       prompt,
       maxTokens: 600,
-      apiKey,
     });
     
     const jsonMatch = response.match(/\{[\s\S]*\}/);

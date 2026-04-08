@@ -11,7 +11,7 @@ import {
   pushLocalToSupabase, getSyncStatus, setSyncStatus
 } from "@/lib/supabase";
 import {
-  getPreferredProvider, setPreferredProvider, getStoredGoogleKey,
+  getPreferredProvider, setPreferredProvider,
   type AIProvider
 } from "@/lib/llm";
 
@@ -64,61 +64,28 @@ export default function SettingsPanel() {
   const [syncResult, setSyncResult] = useState<{ success: boolean; tablesSync: Record<string, number> } | null>(null);
 
   const supabaseConfigured = isSupabaseConfigured();
-  const [anthropicConfigured, setAnthropicConfigured] = useState<boolean | null>(null);
-  const [storedKeyExists, setStoredKeyExists] = useState(false);
-  const [anthropicInput, setAnthropicInput] = useState("");
-  const [googleInput, setGoogleInput] = useState("");
-  const [storedGoogleKeyExists, setStoredGoogleKeyExists] = useState(false);
-  const [preferredProvider, setPreferredProviderState] = useState<AIProvider>("claude");
-
-  const ANTHROPIC_STORAGE_KEY = "cbt_os_anthropic_api_key";
-  const GOOGLE_STORAGE_KEY = "cbt_os_google_api_key";
-
-  // Env vars (only NEXT_PUBLIC_ ones are available client-side)
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const [anthropicConfigured, setAnthropicConfigured] = useState<boolean | null>(null);
+  const [googleConfigured, setGoogleConfigured] = useState<boolean | null>(null);
+  const [preferredProvider, setPreferredProviderState] = useState<AIProvider>("claude");
 
   useEffect(() => {
     fetch("/api/check-env")
       .then((res) => res.json())
-      .then((data) => setAnthropicConfigured(data.anthropicConfigured === true))
-      .catch(() => setAnthropicConfigured(false));
+      .then((data) => {
+        setAnthropicConfigured(data.anthropicConfigured === true);
+        setGoogleConfigured(data.googleConfigured === true);
+      })
+      .catch(() => {
+        setAnthropicConfigured(false);
+        setGoogleConfigured(false);
+      });
   }, []);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const k = localStorage.getItem(ANTHROPIC_STORAGE_KEY);
-    setStoredKeyExists(!!(k && k.trim() && k !== "your_claude_api_key"));
-    const g = localStorage.getItem(GOOGLE_STORAGE_KEY);
-    setStoredGoogleKeyExists(!!(g && g.trim()));
     setPreferredProviderState(getPreferredProvider());
   }, []);
-
-  function handleSaveAnthropicKey() {
-    const v = anthropicInput.trim();
-    if (typeof window === "undefined") return;
-    if (v) {
-      localStorage.setItem(ANTHROPIC_STORAGE_KEY, v);
-      setStoredKeyExists(true);
-      setAnthropicInput("");
-    } else {
-      localStorage.removeItem(ANTHROPIC_STORAGE_KEY);
-      setStoredKeyExists(false);
-    }
-  }
-
-  function handleSaveGoogleKey() {
-    const v = googleInput.trim();
-    if (typeof window === "undefined") return;
-    if (v) {
-      localStorage.setItem(GOOGLE_STORAGE_KEY, v);
-      setStoredGoogleKeyExists(true);
-      setGoogleInput("");
-    } else {
-      localStorage.removeItem(GOOGLE_STORAGE_KEY);
-      setStoredGoogleKeyExists(false);
-    }
-  }
 
   function handleProviderChange(provider: AIProvider) {
     setPreferredProvider(provider);
@@ -169,6 +136,8 @@ export default function SettingsPanel() {
             <p className="text-emerald-400">NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...</p>
             <p className="text-neutral-600 mt-3 mb-2"># Anthropic — get from: console.anthropic.com → API Keys</p>
             <p className="text-blue-400">ANTHROPIC_API_KEY=sk-ant-...</p>
+            <p className="text-neutral-600 mt-3 mb-2"># Google (optional) — get from: aistudio.google.com</p>
+            <p className="text-blue-400">GOOGLE_API_KEY=AIza...</p>
           </div>
 
           <div className="text-xs text-neutral-600 bg-amber-400/5 border border-amber-400/15 rounded-lg p-3">
@@ -190,79 +159,46 @@ export default function SettingsPanel() {
             />
             <EnvRow
               label="Anthropic Claude API Key"
-              envKey="ANTHROPIC_API_KEY or pasted below"
-              value={anthropicConfigured === true || storedKeyExists ? "configured" : undefined}
+              envKey="ANTHROPIC_API_KEY"
+              value={anthropicConfigured ? "configured" : undefined}
+            />
+            <EnvRow
+              label="Google Gemini API Key"
+              envKey="GOOGLE_API_KEY"
+              value={googleConfigured ? "configured" : undefined}
             />
           </div>
 
           <div className="mt-4 pt-4 border-t border-neutral-800">
-            <p className="text-xs font-bold text-neutral-400 mb-2">Or paste key here (stored in this browser only)</p>
-            <p className="text-xs text-neutral-600 mb-2">Use Claude and/or Google (Gemini). Google has a free tier — pick your preferred provider below.</p>
-
-            <div className="mb-4">
-              <p className="text-xs font-bold text-neutral-400 mb-2">Preferred AI provider</p>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleProviderChange("claude")}
-                  className={`flex-1 text-xs font-bold py-2 rounded-lg border transition-colors ${preferredProvider === "claude" ? "border-amber-400 bg-amber-400/10 text-amber-400" : "border-neutral-700 text-neutral-500 hover:text-neutral-300"}`}
-                >
-                  Claude (Anthropic)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleProviderChange("google")}
-                  className={`flex-1 text-xs font-bold py-2 rounded-lg border transition-colors ${preferredProvider === "google" ? "border-blue-400 bg-blue-400/10 text-blue-400" : "border-neutral-700 text-neutral-500 hover:text-neutral-300"}`}
-                >
-                  Google (Gemini)
-                </button>
-              </div>
-            </div>
-
-            <p className="text-xs font-mono text-neutral-500 mb-1">Claude — paste key (or use .env.local)</p>
-            <div className="flex gap-2 mb-4">
-              <input
-                type="password"
-                value={anthropicInput}
-                onChange={(e) => setAnthropicInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSaveAnthropicKey()}
-                placeholder={storedKeyExists ? "Key saved — enter new to replace" : "sk-ant-..."}
-                className="flex-1 bg-neutral-950 border border-neutral-700 rounded-lg px-3 py-2 text-sm text-neutral-200 placeholder-neutral-600 font-mono focus:outline-none focus:border-amber-400"
-                aria-label="Claude API key"
-              />
-              <button
-                type="button"
-                onClick={handleSaveAnthropicKey}
-                className="px-4 py-2 bg-amber-400 hover:bg-amber-300 text-black text-sm font-bold rounded-lg transition-colors"
-              >
-                {anthropicInput.trim() ? "Save" : storedKeyExists ? "Clear" : "Save"}
-              </button>
-            </div>
-
-            <p className="text-xs font-mono text-neutral-500 mb-1">Google (Gemini) — free tier at aistudio.google.com</p>
+            <p className="text-xs font-bold text-neutral-400 mb-2">Preferred AI provider</p>
+            <p className="text-xs text-neutral-600 mb-2">All AI calls go through the server-side proxy. Keys are read from .env.local — never exposed to the browser.</p>
             <div className="flex gap-2">
-              <input
-                type="password"
-                value={googleInput}
-                onChange={(e) => setGoogleInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSaveGoogleKey()}
-                placeholder={storedGoogleKeyExists ? "Key saved — enter new to replace" : "AIza..."}
-                className="flex-1 bg-neutral-950 border border-neutral-700 rounded-lg px-3 py-2 text-sm text-neutral-200 placeholder-neutral-600 font-mono focus:outline-none focus:border-blue-400"
-                aria-label="Google Gemini API key"
-              />
               <button
                 type="button"
-                onClick={handleSaveGoogleKey}
-                className="px-4 py-2 bg-blue-500 hover:bg-blue-400 text-white text-sm font-bold rounded-lg transition-colors"
+                onClick={() => handleProviderChange("claude")}
+                className={`flex-1 text-xs font-bold py-2 rounded-lg border transition-colors ${preferredProvider === "claude" ? "border-amber-400 bg-amber-400/10 text-amber-400" : "border-neutral-700 text-neutral-500 hover:text-neutral-300"}`}
               >
-                {googleInput.trim() ? "Save" : storedGoogleKeyExists ? "Clear" : "Save"}
+                Claude (Anthropic)
+              </button>
+              <button
+                type="button"
+                onClick={() => handleProviderChange("google")}
+                className={`flex-1 text-xs font-bold py-2 rounded-lg border transition-colors ${preferredProvider === "google" ? "border-blue-400 bg-blue-400/10 text-blue-400" : "border-neutral-700 text-neutral-500 hover:text-neutral-300"}`}
+              >
+                Google (Gemini)
               </button>
             </div>
 
-            {(anthropicConfigured === true || storedKeyExists || storedGoogleKeyExists) && (
-              <p className="text-xs text-emerald-400 mt-2 flex items-center gap-1.5">
+            {(anthropicConfigured || googleConfigured) && (
+              <p className="text-xs text-emerald-400 mt-3 flex items-center gap-1.5">
                 <CheckCircle className="w-3.5 h-3.5" />
-                {preferredProvider === "google" ? "Google (Gemini)" : "Claude"} will be used for Skills and Cost Optimizer. Research / Hackathon / Scout need Claude.
+                {preferredProvider === "google" && googleConfigured ? "Google (Gemini)" : "Claude"} is your active provider. Research, Hackathon, and Scout modules require Claude.
+              </p>
+            )}
+            {!anthropicConfigured && !googleConfigured && (
+              <p className="text-xs text-red-400/80 mt-3 flex items-center gap-1.5">
+                <AlertCircle className="w-3.5 h-3.5" />
+                No AI provider configured. Add ANTHROPIC_API_KEY or GOOGLE_API_KEY to .env.local.
               </p>
             )}
           </div>

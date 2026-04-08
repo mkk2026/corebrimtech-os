@@ -199,7 +199,6 @@ The message should feel like it was written specifically for them after research
       task: "custom",
       prompt,
       maxTokens: 400,
-      apiKey,
     });
     
     return message.trim();
@@ -242,7 +241,6 @@ Respond in JSON format:
       task: "custom",
       prompt,
       maxTokens: 500,
-      apiKey,
     });
     
     const jsonMatch = response.match(/\{[\s\S]*\}/);

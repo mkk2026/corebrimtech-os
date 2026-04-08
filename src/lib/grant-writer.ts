@@ -88,7 +88,6 @@ Write in first person ("I", "we", "our"). Be authentic and specific.`;
       task: "custom",
       prompt,
       systemPrompt,
-      apiKey,
       maxTokens: section.wordLimit ? section.wordLimit * 2 : 500,
     });
     
@@ -185,7 +184,6 @@ Make it conversational, authentic, and compelling. Write as spoken words, not es
     task: "custom",
     prompt,
     maxTokens: 400,
-    apiKey,
   });
 }
 
@@ -218,7 +216,6 @@ Keep the core message but make it stronger. Maintain first person voice.`;
     task: "custom",
     prompt,
     maxTokens: section.wordLimit ? section.wordLimit * 2 : 500,
-    apiKey,
   });
 }
 

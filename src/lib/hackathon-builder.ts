@@ -1,6 +1,8 @@
 // CORE BRIM TECH OS — Hackathon Builder Agent
 // Paste a DevPost URL → reads brief → builds full project → saves to library
 
+import { proxyHeaders } from "@/lib/proxy";
+
 export interface HackathonBrief {
   title: string;
   description: string;
@@ -350,7 +352,7 @@ export default function InterviewCoach() {
     try {
       const res = await fetch("/api/interview", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: proxyHeaders(),
         body: JSON.stringify({
           message: content,
           history: newHistory.slice(-10),
@@ -599,7 +601,7 @@ async function fetchRealBrief(url: string, apiKey: string): Promise<HackathonBri
     "/api/ai",
     {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: proxyHeaders(),
       body: JSON.stringify({
         provider: "claude",
         model: "claude-sonnet-4-20250514",
@@ -621,7 +623,7 @@ async function generateRealPlan(brief: HackathonBrief, founderContext: string, a
     "/api/ai",
     {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: proxyHeaders(),
       body: JSON.stringify({
         provider: "claude",
         model: "claude-opus-4-20250514",
@@ -642,7 +644,7 @@ async function generateRealFiles(plan: ProjectPlan, brief: HackathonBrief, found
     "/api/ai",
     {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: proxyHeaders(),
       body: JSON.stringify({
         provider: "claude",
         model: "claude-opus-4-20250514",

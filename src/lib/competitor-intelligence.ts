@@ -1,6 +1,7 @@
 // CORE BRIM TECH OS — Competitor Intelligence Engine
 // Deep research on competitors, delta tracking, strategic counter-moves
 
+import { proxyHeaders } from "@/lib/proxy";
 import type { Competitor } from "./founder-brain";
 import { fetchWithTimeout, getAnthropicError } from "./anthropic";
 
@@ -220,9 +221,7 @@ async function runRealIntelligence(competitor: Competitor, apiKey: string): Prom
     "/api/ai",
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: proxyHeaders(),
       body: JSON.stringify({
         provider: "claude",
         model: "claude-sonnet-4-20250514",

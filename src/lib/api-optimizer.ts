@@ -2,6 +2,8 @@
 // Smart model routing, caching, and batch processing
 // Goal: Cut API costs by 70%+ while maintaining quality
 
+import { proxyHeaders } from "@/lib/proxy";
+
 export type ModelTier = "haiku" | "sonnet" | "opus" | "gemini_flash";
 
 export interface APICall {
@@ -298,7 +300,6 @@ export async function smartCall(opts: {
   task: TaskType;
   prompt: string;
   systemPrompt?: string;
-  apiKey?: string;
   forceModel?: ModelTier;
   skipCache?: boolean;
   maxTokens?: number;
@@ -340,7 +341,7 @@ export async function smartCall(opts: {
   // Claude path: use server-side proxy (no client-side API key needed)
   const response = await fetch("/api/ai", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: proxyHeaders(),
     body: JSON.stringify({
       provider: "claude",
       model: modelConfig.modelId,

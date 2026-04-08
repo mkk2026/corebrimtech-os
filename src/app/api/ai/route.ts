@@ -25,6 +25,18 @@ interface AIRequestBody {
 }
 
 export async function POST(req: NextRequest) {
+  // Auth guard: reject requests without valid token
+  const secret = process.env.API_PROXY_SECRET;
+  if (secret) {
+    const token = req.headers.get("x-proxy-token");
+    if (token !== secret) {
+      return NextResponse.json(
+        { error: { message: "Unauthorized" } },
+        { status: 401 }
+      );
+    }
+  }
+
   try {
     const body: AIRequestBody = await req.json();
     const provider = body.provider ?? "claude";
