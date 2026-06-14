@@ -8,10 +8,11 @@
  * Lets the money-spending auto-research scan be killed instantly if it misbehaves.
  */
 
-export type FeatureFlag = "autoResearch";
+export type FeatureFlag = "autoResearch" | "coFounder";
 
 const DEFAULTS: Record<FeatureFlag, boolean> = {
   autoResearch: true,
+  coFounder: true,
 };
 
 const STORAGE_PREFIX = "cbt_os_flag_";
