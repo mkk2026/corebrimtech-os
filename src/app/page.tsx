@@ -35,9 +35,11 @@ import APICostOptimizer from "@/components/optimizer/APICostOptimizer";
 import SettingsPanel from "@/components/settings/SettingsPanel";
 import { PortfolioWins, KnowledgeBase, SOPsPlaybooks, NotificationCenter, SchedulerPanel, EmailTemplates, DataExport } from "@/components/extras/AllExtras";
 import AutonomousOutreach from "@/components/intelligence/AutonomousOutreach";
+import Onboarding from "@/components/onboarding/Onboarding";
 import { generateSystemNotifications, getUnreadCount } from "@/lib/support";
 import { showToast, subscribeToToast } from "@/lib/toast";
 import type { SyncStatus } from "@/lib/supabase";
+import { getBrain } from "@/lib/founder-brain";
 
 function formatSyncTime(iso: string | null): string {
   if (!iso) return "";
@@ -173,6 +175,11 @@ function HomePage() {
     params.set("module", id);
     router.replace(`?${params.toString()}`, { scroll: false });
   }, [router, searchParams]);
+  const [showOnboarding, setShowOnboarding] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const brain = getBrain();
+    return !brain || !brain.setupComplete;
+  });
   const [syncStatus, setSyncStatusState] = useState(() => getSyncStatus());
   const [toast, setToast] = useState<{ message: string; error: boolean } | null>(null);
 
@@ -257,13 +264,17 @@ function HomePage() {
 
   const badge = BADGES[active];
 
+  if (showOnboarding) {
+    return <Onboarding onComplete={() => setShowOnboarding(false)} />;
+  }
+
   return (
     <div className="flex h-screen bg-neutral-950 overflow-hidden">
       {toast && (
         <div
           role="status"
           aria-live="polite"
-          className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-lg border text-sm font-medium shadow-lg ${
+          className={`fixed top-4 left-1/2 -translate-x-1/2 z-[60] px-4 py-2 rounded-lg border text-sm font-medium shadow-lg ${
             toast.error ? "bg-red-950/90 border-red-500/30 text-red-200" : "bg-emerald-950/90 border-emerald-500/30 text-emerald-200"
           }`}
         >
@@ -271,12 +282,12 @@ function HomePage() {
         </div>
       )}
       <Sidebar activeModule={active} onModuleChange={handleModuleChange} unreadNotifications={getUnreadCount()} />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="border-b border-neutral-800 px-6 py-3 flex items-center justify-between gap-3 flex-shrink-0 bg-neutral-950">
+      <div className="flex-1 flex flex-col overflow-hidden pt-[52px] lg:pt-0">
+        <div className="border-b border-neutral-800 px-4 sm:px-6 py-3 flex items-center justify-between gap-3 flex-shrink-0 bg-neutral-950">
           <div className="flex items-center gap-3 min-w-0">
             <h1 className="text-sm font-bold text-neutral-200 truncate">{LABELS[active] || active}</h1>
             {badge && (
-              <span className={`text-xs font-mono px-2 py-0.5 rounded border flex-shrink-0 ${badge.color}`}>{badge.label}</span>
+              <span className={`text-xs font-mono px-2 py-0.5 rounded border flex-shrink-0 hidden sm:inline-block ${badge.color}`}>{badge.label}</span>
             )}
           </div>
           <SyncStatusBar status={syncStatus} onRetry={runSync} isConfigured={isSupabaseConfigured()} />
