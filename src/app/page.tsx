@@ -37,6 +37,8 @@ import { PortfolioWins, KnowledgeBase, SOPsPlaybooks, NotificationCenter, Schedu
 import AutonomousOutreach from "@/components/intelligence/AutonomousOutreach";
 import Onboarding from "@/components/onboarding/Onboarding";
 import SeedScanBanner from "@/components/home/SeedScanBanner";
+import CoFounderDock from "@/components/cofounder/CoFounderDock";
+import { isFeatureEnabled } from "@/lib/feature-flags";
 import { generateSystemNotifications, getUnreadCount } from "@/lib/support";
 import { showToast, subscribeToToast } from "@/lib/toast";
 import type { SyncStatus } from "@/lib/supabase";
@@ -305,6 +307,7 @@ function HomePage() {
           <div className="flex-1 min-h-0 overflow-auto">{render()}</div>
         </div>
       </div>
+      {isFeatureEnabled("coFounder") && <CoFounderDock />}
     </div>
   );
 }
