@@ -307,7 +307,7 @@ function HomePage() {
           <div className="flex-1 min-h-0 overflow-auto">{render()}</div>
         </div>
       </div>
-      {isFeatureEnabled("coFounder") && <CoFounderDock />}
+      {isFeatureEnabled("coFounder") && <CoFounderDock onNavigate={handleModuleChange} />}
     </div>
   );
 }
