@@ -14,7 +14,6 @@ import {
   generateReviewInsights,
   getWeeklyReviewStats,
   getReviewStreak,
-  initializeSampleReview,
   type WeeklyReview,
 } from "@/lib/weekly-review";
 
@@ -27,7 +26,6 @@ export default function WeeklyReview() {
   const [insights, setInsights] = useState<string[]>([]);
 
   useEffect(() => {
-    initializeSampleReview();
     refresh();
   }, []);
 

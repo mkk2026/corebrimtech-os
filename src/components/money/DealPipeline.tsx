@@ -13,7 +13,6 @@ import {
   deleteDeal,
   moveDealStage,
   getDealsNeedingAttention,
-  initializeSampleDeals,
   STAGE_CONFIG,
   type Deal,
   type DealStage,
@@ -30,7 +29,6 @@ export default function DealPipeline() {
   const [newDeal, setNewDeal] = useState({ company: "", contactName: "", value: "", stage: "lead" as DealStage });
 
   useEffect(() => {
-    initializeSampleDeals();
     refresh();
   }, []);
 

@@ -17,7 +17,6 @@ import {
   deleteExpense,
   deleteRevenue,
   updateBurnConfig,
-  initializeSampleBurnData,
   type Expense,
   type Revenue,
 } from "@/lib/burn-rate";
@@ -34,7 +33,6 @@ export default function BurnRateTracker() {
   const [newRevenue, setNewRevenue] = useState({ name: "", amount: "", type: "recurring" as Revenue["type"], confidence: 80 });
 
   useEffect(() => {
-    initializeSampleBurnData();
     refresh();
   }, []);
 
