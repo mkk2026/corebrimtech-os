@@ -83,6 +83,8 @@ export interface FounderBrain {
   coreValues: string[];
   updatedAt: string;
   setupComplete: boolean;
+  /** ISO timestamp set once the onboarding auto-research seed scan has run (dedup guard). */
+  seededAt?: string;
 }
 
 // ── STORAGE ───────────────────────────────────────────────────────────────────
