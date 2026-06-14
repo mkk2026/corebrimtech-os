@@ -17,6 +17,13 @@ export function getStoredAnthropicKey(): string | undefined {
   return k && k.trim() && k !== "your_claude_api_key" ? k : undefined;
 }
 
+export function setStoredAnthropicKey(key: string): void {
+  if (typeof window === "undefined") return;
+  const trimmed = key.trim();
+  if (trimmed) localStorage.setItem(ANTHROPIC_KEY_STORAGE, trimmed);
+  else localStorage.removeItem(ANTHROPIC_KEY_STORAGE);
+}
+
 export function getStoredGoogleKey(): string | undefined {
   if (typeof window === "undefined") return undefined;
   const k = localStorage.getItem(GOOGLE_KEY_STORAGE);

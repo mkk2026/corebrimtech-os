@@ -1,15 +1,18 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { ArrowRight, ArrowLeft, Rocket, User, Building2, Target, Check } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { ArrowRight, ArrowLeft, Rocket, User, Building2, Target, Check, KeyRound, Loader2, Sparkles } from "lucide-react";
 import { getBrain, getDefaultBrain, saveBrain } from "@/lib/founder-brain";
 import type { FounderBrain } from "@/lib/founder-brain";
+import { getStoredAnthropicKey, setStoredAnthropicKey } from "@/lib/llm";
+import { seedAutoResearchLive } from "@/lib/auto-research";
+import { getSeedStatus, subscribeSeedStatus, type SeedStatus } from "@/lib/seed-scan-store";
 
 interface OnboardingProps {
   onComplete: () => void;
 }
 
-type Step = "welcome" | "founder" | "company" | "stage" | "ready";
+type Step = "welcome" | "founder" | "company" | "stage" | "connect" | "ready";
 
 const STAGES: { value: FounderBrain["stage"]; label: string; desc: string }[] = [
   { value: "pre-idea",        label: "Pre-Idea",        desc: "Exploring what to build" },
@@ -20,6 +23,8 @@ const STAGES: { value: FounderBrain["stage"]; label: string; desc: string }[] = 
   { value: "scale",           label: "Scale",           desc: "Expanding markets or team" },
 ];
 
+const STEPS: Step[] = ["welcome", "founder", "company", "stage", "connect", "ready"];
+
 export default function Onboarding({ onComplete }: OnboardingProps) {
   const [step, setStep] = useState<Step>("welcome");
   const [founderName, setFounderName] = useState("");
@@ -29,54 +34,95 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
   const [companyTagline, setCompanyTagline] = useState("");
   const [companyMission, setCompanyMission] = useState("");
   const [stage, setStage] = useState<FounderBrain["stage"]>("mvp");
+  const [apiKey, setApiKey] = useState(() => getStoredAnthropicKey() ?? "");
+  const [launching, setLaunching] = useState(false);
+  const [seedStatus, setSeedStatus] = useState<SeedStatus>(() => getSeedStatus());
+
+  useEffect(() => subscribeSeedStatus(setSeedStatus), []);
+
+  // Persist onboarding state into FounderBrain immutably.
+  const persistBrain = useCallback((complete: boolean) => {
+    const brain = getBrain() || getDefaultBrain();
+    const next: FounderBrain = {
+      ...brain,
+      companyName: companyName || brain.companyName,
+      companyTagline,
+      companyMission,
+      stage,
+      setupComplete: complete,
+    };
+    if (founderName) {
+      const existing = next.founders[0];
+      next.founders = existing
+        ? [{ ...existing, name: founderName, role: founderRole, email: founderEmail || existing.email }, ...next.founders.slice(1)]
+        : [{
+            id: `founder_${Date.now()}`,
+            name: founderName,
+            role: founderRole,
+            location: "",
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            bio: "",
+            skills: [],
+            strengths: [],
+            workStyle: "",
+            email: founderEmail,
+          }];
+    }
+    saveBrain(next);
+  }, [companyName, companyTagline, companyMission, stage, founderName, founderRole, founderEmail]);
+
+  // Persist the API key as the founder types it (local-only storage).
+  const handleKeyChange = useCallback((value: string) => {
+    setApiKey(value);
+    setStoredAnthropicKey(value);
+  }, []);
+
+  // Entering the ready step persists context and kicks off the background seed scan.
+  const goToReady = useCallback(() => {
+    persistBrain(false);
+    void seedAutoResearchLive();
+    setStep("ready");
+  }, [persistBrain]);
 
   const handleFinish = useCallback(() => {
-    const brain = getBrain() || getDefaultBrain();
-    brain.companyName = companyName || brain.companyName;
-    brain.companyTagline = companyTagline;
-    brain.companyMission = companyMission;
-    brain.stage = stage;
-    brain.setupComplete = true;
-
-    if (founderName) {
-      const existingFounder = brain.founders[0];
-      if (existingFounder) {
-        brain.founders[0] = {
-          ...existingFounder,
-          name: founderName,
-          role: founderRole,
-          email: founderEmail || existingFounder.email,
-        };
-      } else {
-        brain.founders.push({
-          id: `founder_${Date.now()}`,
-          name: founderName,
-          role: founderRole,
-          location: "",
-          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          bio: "",
-          skills: [],
-          strengths: [],
-          workStyle: "",
-          email: founderEmail,
-        });
-      }
-    }
-
-    saveBrain(brain);
+    if (launching) return; // guard double-click
+    setLaunching(true);
+    persistBrain(true);
     onComplete();
-  }, [companyName, companyTagline, companyMission, stage, founderName, founderRole, founderEmail, onComplete]);
+  }, [launching, persistBrain, onComplete]);
 
-  const steps: Step[] = ["welcome", "founder", "company", "stage", "ready"];
-  const currentIdx = steps.indexOf(step);
-  const canGoBack = currentIdx > 0;
-  const goBack = () => setStep(steps[currentIdx - 1]);
+  const handleSkip = useCallback(() => {
+    // Mark complete with a sparse profile — FounderBrainNudge will gently prompt later.
+    persistBrain(true);
+    onComplete();
+  }, [persistBrain, onComplete]);
+
+  const currentIdx = STEPS.indexOf(step);
+  const goBack = () => setStep(STEPS[currentIdx - 1]);
+
+  function readyMessage(): { icon: "spin" | "spark" | "key" | null; text: string } | null {
+    switch (seedStatus.phase) {
+      case "researching": return { icon: "spin", text: seedStatus.message };
+      case "found": {
+        const parts = [
+          seedStatus.competitors > 0 && `${seedStatus.competitors} competitor${seedStatus.competitors === 1 ? "" : "s"}`,
+          seedStatus.gaps > 0 && `${seedStatus.gaps} market gap${seedStatus.gaps === 1 ? "" : "s"}`,
+        ].filter(Boolean);
+        return parts.length
+          ? { icon: "spark", text: `I found ${parts.join(" and ")} in your space while you set up.` }
+          : { icon: "spark", text: "Market research complete." };
+      }
+      case "needs-key": return { icon: "key", text: "Add an AI key anytime to unlock auto-research." };
+      case "failed": return { icon: null, text: "Couldn't reach research just now — retry from the dashboard." };
+      default: return null;
+    }
+  }
 
   return (
     <div className="fixed inset-0 z-[70] bg-neutral-950 flex items-center justify-center p-4">
       {/* Progress dots */}
       <div className="fixed top-6 left-1/2 -translate-x-1/2 flex items-center gap-2">
-        {steps.map((s, i) => (
+        {STEPS.map((s, i) => (
           <div
             key={s}
             className={`h-1.5 rounded-full transition-all duration-300 ${
@@ -102,13 +148,22 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
             <p className="text-sm text-neutral-600">
               Let&apos;s set up in under 60 seconds.
             </p>
-            <button
-              type="button"
-              onClick={() => setStep("founder")}
-              className="inline-flex items-center gap-2 bg-amber-400 text-black font-bold px-8 py-3 rounded-xl hover:bg-amber-300 transition-colors text-sm"
-            >
-              Let&apos;s go <ArrowRight className="w-4 h-4" />
-            </button>
+            <div className="flex flex-col items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setStep("founder")}
+                className="inline-flex items-center gap-2 bg-amber-400 text-black font-bold px-8 py-3 rounded-xl hover:bg-amber-300 transition-colors text-sm"
+              >
+                Let&apos;s go <ArrowRight className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                onClick={handleSkip}
+                className="text-xs text-neutral-600 hover:text-neutral-400 transition-colors"
+              >
+                Skip for now
+              </button>
+            </div>
           </div>
         )}
 
@@ -279,7 +334,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
               </button>
               <button
                 type="button"
-                onClick={() => setStep("ready")}
+                onClick={() => setStep("connect")}
                 className="inline-flex items-center gap-2 bg-amber-400 text-black font-bold px-6 py-2.5 rounded-xl hover:bg-amber-300 transition-colors text-sm"
               >
                 Next <ArrowRight className="w-4 h-4" />
@@ -288,50 +343,113 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
           </div>
         )}
 
-        {/* ── Ready ── */}
-        {step === "ready" && (
-          <div className="text-center space-y-8 animate-in fade-in duration-500">
-            <div className="w-16 h-16 rounded-2xl bg-emerald-400/10 border border-emerald-400/20 flex items-center justify-center mx-auto">
-              <Rocket className="w-8 h-8 text-emerald-400" />
+        {/* ── Connect AI ── */}
+        {step === "connect" && (
+          <div className="space-y-6 animate-in fade-in duration-500">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-purple-400/10 border border-purple-400/20 flex items-center justify-center">
+                <KeyRound className="w-5 h-5 text-purple-400" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-neutral-100">Connect your AI brain</h2>
+                <p className="text-sm text-neutral-500">Powers research, proposals, and more. Stored only on this device.</p>
+              </div>
             </div>
+
             <div>
-              <h2 className="text-2xl font-black text-neutral-100">
-                {companyName ? `${companyName} is ready.` : "You're ready."}
-              </h2>
-              <p className="text-neutral-500 mt-3 leading-relaxed">
-                Your OS is configured. Start with the <strong className="text-neutral-300">Command Center</strong> for an overview,
-                or dive into <strong className="text-neutral-300">Founder Brain</strong> to add more detail later.
+              <label htmlFor="onb-key" className="text-xs font-mono text-neutral-500 uppercase tracking-widest block mb-1.5">Anthropic API key</label>
+              <input
+                id="onb-key"
+                type="password"
+                autoComplete="off"
+                value={apiKey}
+                onChange={(e) => handleKeyChange(e.target.value)}
+                placeholder="sk-ant-..."
+                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-4 py-3 text-sm text-neutral-200 placeholder:text-neutral-700 focus:outline-none focus:border-purple-400/40 transition-colors font-mono"
+                autoFocus
+              />
+              <p className="text-xs text-neutral-600 mt-2">
+                With a key, the OS researches your market in the background as you finish.
               </p>
             </div>
 
-            <div className="space-y-2 text-left max-w-sm mx-auto">
-              {[
-                founderName && `Founder: ${founderName}`,
-                companyName && `Company: ${companyName}`,
-                companyTagline && `"${companyTagline}"`,
-                `Stage: ${STAGES.find(s => s.value === stage)?.label}`,
-              ].filter(Boolean).map((line, i) => (
-                <div key={i} className="flex items-center gap-2 text-sm text-neutral-400">
-                  <Check className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
-                  <span>{line}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex items-center justify-center gap-3 pt-2">
+            <div className="flex items-center justify-between pt-2">
               <button type="button" onClick={goBack} className="text-sm text-neutral-600 hover:text-neutral-400 transition-colors flex items-center gap-1">
                 <ArrowLeft className="w-3.5 h-3.5" /> Back
               </button>
-              <button
-                type="button"
-                onClick={handleFinish}
-                className="inline-flex items-center gap-2 bg-amber-400 text-black font-bold px-8 py-3 rounded-xl hover:bg-amber-300 transition-colors text-sm"
-              >
-                Launch my OS <Rocket className="w-4 h-4" />
-              </button>
+              <div className="flex items-center gap-3">
+                <button type="button" onClick={goToReady} className="text-sm text-neutral-600 hover:text-neutral-400 transition-colors">
+                  I&apos;ll add it later
+                </button>
+                <button
+                  type="button"
+                  onClick={goToReady}
+                  className="inline-flex items-center gap-2 bg-amber-400 text-black font-bold px-6 py-2.5 rounded-xl hover:bg-amber-300 transition-colors text-sm"
+                >
+                  Next <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           </div>
         )}
+
+        {/* ── Ready ── */}
+        {step === "ready" && (() => {
+          const msg = readyMessage();
+          return (
+            <div className="text-center space-y-8 animate-in fade-in duration-500">
+              <div className="w-16 h-16 rounded-2xl bg-emerald-400/10 border border-emerald-400/20 flex items-center justify-center mx-auto">
+                <Rocket className="w-8 h-8 text-emerald-400" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-black text-neutral-100">
+                  {companyName ? `${companyName} is ready.` : "You're ready."}
+                </h2>
+                <p className="text-neutral-500 mt-3 leading-relaxed">
+                  Your OS is configured. Start with the <strong className="text-neutral-300">Command Center</strong> for an overview,
+                  or dive into <strong className="text-neutral-300">Founder Brain</strong> to add more detail later.
+                </p>
+              </div>
+
+              {msg && (
+                <div className="flex items-center justify-center gap-2 text-sm text-neutral-300 bg-neutral-900 border border-neutral-800 rounded-xl px-4 py-3 max-w-md mx-auto">
+                  {msg.icon === "spin" && <Loader2 className="w-4 h-4 animate-spin text-blue-400 flex-shrink-0" />}
+                  {msg.icon === "spark" && <Sparkles className="w-4 h-4 text-emerald-400 flex-shrink-0" />}
+                  {msg.icon === "key" && <KeyRound className="w-4 h-4 text-amber-400 flex-shrink-0" />}
+                  <span>{msg.text}</span>
+                </div>
+              )}
+
+              <div className="space-y-2 text-left max-w-sm mx-auto">
+                {[
+                  founderName && `Founder: ${founderName}`,
+                  companyName && `Company: ${companyName}`,
+                  companyTagline && `"${companyTagline}"`,
+                  `Stage: ${STAGES.find(s => s.value === stage)?.label}`,
+                ].filter(Boolean).map((line, i) => (
+                  <div key={i} className="flex items-center gap-2 text-sm text-neutral-400">
+                    <Check className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                    <span>{line}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-center justify-center gap-3 pt-2">
+                <button type="button" onClick={goBack} className="text-sm text-neutral-600 hover:text-neutral-400 transition-colors flex items-center gap-1">
+                  <ArrowLeft className="w-3.5 h-3.5" /> Back
+                </button>
+                <button
+                  type="button"
+                  onClick={handleFinish}
+                  disabled={launching}
+                  className="inline-flex items-center gap-2 bg-amber-400 text-black font-bold px-8 py-3 rounded-xl hover:bg-amber-300 transition-colors text-sm disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  Launch my OS <Rocket className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );

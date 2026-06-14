@@ -167,6 +167,17 @@ export default function Sidebar({ activeModule, onModuleChange, unreadNotificati
     return () => window.removeEventListener("keydown", handleKey);
   }, []);
 
+  // Close the mobile drawer when the viewport grows to the desktop breakpoint,
+  // so a drawer opened on mobile doesn't get stuck after a resize/rotate.
+  useEffect(() => {
+    const mql = window.matchMedia("(min-width: 1024px)");
+    function handleChange(e: MediaQueryListEvent) {
+      if (e.matches) setMobileOpen(false);
+    }
+    mql.addEventListener("change", handleChange);
+    return () => mql.removeEventListener("change", handleChange);
+  }, []);
+
   // Prevent body scroll when mobile drawer is open
   useEffect(() => {
     if (mobileOpen) {

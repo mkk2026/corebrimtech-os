@@ -17,7 +17,7 @@
 
 import { z } from "zod";
 import type { SeedStatus } from "./seed-scan-store";
-import { setSeedStatus } from "./seed-scan-store";
+import { getSeedStatus, setSeedStatus } from "./seed-scan-store";
 import { complete, getActiveProvider } from "./llm";
 import { saveReport, type CompetitorReport } from "./competitor-intelligence";
 import { addMarketGap } from "./market-gap-scanner";
@@ -198,6 +198,8 @@ async function runScanLive(
 
 /** Fire-and-forget entrypoint called when onboarding completes. */
 export function seedAutoResearchLive(): Promise<void> {
+  // In-flight guard: never run two scans at once (ready-screen fire + Retry).
+  if (getSeedStatus().phase === "researching") return Promise.resolve();
   return seedAutoResearch({
     isEnabled: () => isFeatureEnabled("autoResearch"),
     alreadySeeded: () => !!getBrain()?.seededAt,

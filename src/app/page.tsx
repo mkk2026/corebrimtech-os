@@ -36,6 +36,7 @@ import SettingsPanel from "@/components/settings/SettingsPanel";
 import { PortfolioWins, KnowledgeBase, SOPsPlaybooks, NotificationCenter, SchedulerPanel, EmailTemplates, DataExport } from "@/components/extras/AllExtras";
 import AutonomousOutreach from "@/components/intelligence/AutonomousOutreach";
 import Onboarding from "@/components/onboarding/Onboarding";
+import SeedScanBanner from "@/components/home/SeedScanBanner";
 import { generateSystemNotifications, getUnreadCount } from "@/lib/support";
 import { showToast, subscribeToToast } from "@/lib/toast";
 import type { SyncStatus } from "@/lib/supabase";
@@ -180,6 +181,9 @@ function HomePage() {
     const brain = getBrain();
     return !brain || !brain.setupComplete;
   });
+  // Hydration gate: avoid an onboarding/app flash before client state is known.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const [syncStatus, setSyncStatusState] = useState(() => getSyncStatus());
   const [toast, setToast] = useState<{ message: string; error: boolean } | null>(null);
 
@@ -264,6 +268,10 @@ function HomePage() {
 
   const badge = BADGES[active];
 
+  if (!mounted) {
+    return <div className="flex h-screen items-center justify-center bg-neutral-950 text-neutral-500 text-sm">Loading...</div>;
+  }
+
   if (showOnboarding) {
     return <Onboarding onComplete={() => setShowOnboarding(false)} />;
   }
@@ -292,6 +300,7 @@ function HomePage() {
           </div>
           <SyncStatusBar status={syncStatus} onRetry={runSync} isConfigured={isSupabaseConfigured()} />
         </div>
+        <SeedScanBanner />
         <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
           <div className="flex-1 min-h-0 overflow-auto">{render()}</div>
         </div>

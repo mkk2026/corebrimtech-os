@@ -10,7 +10,12 @@ interface FounderBrainNudgeProps {
 
 export default function FounderBrainNudge({ onNavigate, className = "" }: FounderBrainNudgeProps) {
   const brain = getBrain();
-  if (brain?.setupComplete) return null;
+  if (!brain) return null;
+  // Show while setup is incomplete, OR after a "Skip for now" — setupComplete but the
+  // profile is still essentially empty (no founders, no tagline/mission).
+  const isSparse =
+    brain.founders.length === 0 && !brain.companyTagline?.trim() && !brain.companyMission?.trim();
+  if (brain.setupComplete && !isSparse) return null;
 
   return (
     <div
