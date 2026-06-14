@@ -2,8 +2,14 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "CORE BRIM TECH OS",
-  description: "The internal operating system for Core Brim Tech",
+  title: "CoreBrimTech OS — The Operating System for Startup Founders",
+  description: "Research, build, track money, and grow your startup. All in one dashboard. Built for founders who move fast.",
+  keywords: ["startup", "founder tools", "operating system", "dashboard", "SaaS"],
+  openGraph: {
+    title: "CoreBrimTech OS",
+    description: "The operating system for startup founders. Research, build, track money, grow.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({

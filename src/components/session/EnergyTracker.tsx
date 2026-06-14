@@ -11,7 +11,6 @@ import {
   getEnergyByTimeOfDay,
   addEnergyEntry,
   deleteEnergyEntry,
-  initializeSampleEnergyData,
   ACTIVITY_LABELS,
   TIME_LABELS,
   ENERGY_LABELS,
@@ -40,7 +39,6 @@ export default function EnergyTracker() {
   });
 
   useEffect(() => {
-    initializeSampleEnergyData();
     refresh();
   }, []);
 

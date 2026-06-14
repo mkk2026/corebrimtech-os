@@ -136,39 +136,3 @@ export function getDecisionPatterns(): { category: DecisionCategory; repeatRate:
   }).filter(p => p.total > 0).sort((a, b) => b.repeatRate - a.repeatRate);
 }
 
-// Sample decisions for first-time users
-export const SAMPLE_DECISIONS: Omit<Decision, "id" | "decidedAt" | "status">[] = [
-  {
-    title: "Pivot from B2C to B2B",
-    description: "Shifted target market from individual consumers to enterprise customers",
-    category: "strategy",
-    impact: "critical",
-    expectedOutcome: "Higher LTV, longer sales cycles but bigger deals",
-    actualOutcome: "Closed 3 enterprise clients in first month, 10x revenue per customer",
-    lessonsLearned: "B2B sales cycle is longer but worth it. Need dedicated sales person.",
-    wouldRepeat: true,
-    context: "B2C acquisition costs were unsustainable",
-    alternatives: ["Keep grinding B2C", "Shut down", "Raise more for marketing"],
-    stakeholders: ["Co-founder", "Advisor"],
-  },
-  {
-    title: "Hired first employee",
-    description: "Brought on full-stack developer as employee #1",
-    category: "hiring",
-    impact: "high",
-    expectedOutcome: "2x development velocity",
-    actualOutcome: "1.5x velocity but huge knowledge transfer value",
-    lessonsLearned: "First hire should be someone who can work independently",
-    wouldRepeat: true,
-    context: "Founder was bottleneck on all technical decisions",
-    alternatives: ["Keep solo", "Hire contractor", "Outsource"],
-    stakeholders: ["Co-founder"],
-  },
-];
-
-export function initializeSampleDecisions(): void {
-  const existing = getDecisions();
-  if (existing.length === 0) {
-    SAMPLE_DECISIONS.forEach(d => addDecision(d));
-  }
-}

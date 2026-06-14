@@ -14,7 +14,6 @@ import {
   addDecision,
   updateDecision,
   deleteDecision,
-  initializeSampleDecisions,
   type Decision,
   type DecisionCategory,
   type DecisionImpact,
@@ -75,7 +74,6 @@ export default function DecisionJournal({ onBack }: DecisionJournalProps) {
   }
 
   useEffect(() => {
-    initializeSampleDecisions();
     refresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
