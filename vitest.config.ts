@@ -22,6 +22,7 @@ export default defineConfig({
         "src/lib/auto-research.ts",
         "src/lib/feature-flags.ts",
         "src/lib/seed-scan-store.ts",
+        "src/lib/cofounder/**/*.ts",
         "src/components/onboarding/Onboarding.tsx",
       ],
       thresholds: {
