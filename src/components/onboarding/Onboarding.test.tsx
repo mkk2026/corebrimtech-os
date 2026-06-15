@@ -18,7 +18,7 @@ describe("Onboarding", () => {
 
   it("'Skip for now' completes setup without firing the seed scan", async () => {
     const onComplete = vi.fn();
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<Onboarding onComplete={onComplete} />);
 
     await user.click(screen.getByRole("button", { name: /skip for now/i }));
@@ -30,7 +30,7 @@ describe("Onboarding", () => {
 
   it("walks the full flow, stores the key, fires the seed, and launches", async () => {
     const onComplete = vi.fn();
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<Onboarding onComplete={onComplete} />);
 
     await user.click(screen.getByRole("button", { name: /let.s go/i }));
@@ -51,7 +51,7 @@ describe("Onboarding", () => {
   });
 
   it("shows the live 'found' count on the ready screen", async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<Onboarding onComplete={vi.fn()} />);
 
     await user.click(screen.getByRole("button", { name: /let.s go/i }));
@@ -75,7 +75,7 @@ describe("Onboarding", () => {
   }
 
   it("renders each seed-status message variant on the ready screen", async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<Onboarding onComplete={vi.fn()} />);
     await gotoReady(user);
 
@@ -94,7 +94,7 @@ describe("Onboarding", () => {
 
   it("does not double-fire onComplete on a double-click of Launch", async () => {
     const onComplete = vi.fn();
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(<Onboarding onComplete={onComplete} />);
 
     await user.click(screen.getByRole("button", { name: /let.s go/i }));

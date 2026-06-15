@@ -4,6 +4,7 @@
  */
 
 import { proxyHeaders } from "@/lib/proxy";
+import { postToAI } from "@/lib/ai-transport";
 
 const ANTHROPIC_KEY_STORAGE = "cbt_os_anthropic_api_key";
 const GOOGLE_KEY_STORAGE = "cbt_os_google_api_key";
@@ -68,21 +69,18 @@ async function completeWithClaude(_apiKey: string, opts: LLMCompleteOptions): Pr
   const id = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
   try {
-    const res = await fetch("/api/ai", {
-      method: "POST",
-      headers: proxyHeaders(),
-      body: JSON.stringify({
+    const { ok, status, data } = await postToAI(
+      {
         provider: "claude",
         prompt: opts.prompt,
         system: opts.systemPrompt,
         max_tokens: opts.maxTokens ?? 2000,
-      }),
-      signal: controller.signal,
-    });
+      },
+      { headers: proxyHeaders(), signal: controller.signal },
+    );
     clearTimeout(id);
-    const data = await res.json();
-    if (!res.ok) {
-      const msg = (data as { error?: { message?: string } })?.error?.message ?? res.statusText ?? `HTTP ${res.status}`;
+    if (!ok) {
+      const msg = (data as { error?: { message?: string } })?.error?.message ?? `HTTP ${status}`;
       throw new Error(msg);
     }
     const text = (data as { content?: { type: string; text?: string }[] })?.content?.[0]?.text;
@@ -100,20 +98,17 @@ async function completeWithGoogle(_apiKey: string, opts: LLMCompleteOptions): Pr
   const id = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
   try {
-    const res = await fetch("/api/ai", {
-      method: "POST",
-      headers: proxyHeaders(),
-      body: JSON.stringify({
+    const { ok, status, data } = await postToAI(
+      {
         provider: "google",
         prompt: opts.systemPrompt ? `${opts.systemPrompt}\n\n${opts.prompt}` : opts.prompt,
         max_tokens: opts.maxTokens ?? 2000,
-      }),
-      signal: controller.signal,
-    });
+      },
+      { headers: proxyHeaders(), signal: controller.signal },
+    );
     clearTimeout(id);
-    const data = await res.json();
-    if (!res.ok) {
-      const msg = (data as { error?: { message?: string } })?.error?.message ?? res.statusText ?? `HTTP ${res.status}`;
+    if (!ok) {
+      const msg = (data as { error?: { message?: string } })?.error?.message ?? `HTTP ${status}`;
       throw new Error(msg);
     }
     const text = (data as { content?: { type: string; text?: string }[] })?.content?.[0]?.text;
