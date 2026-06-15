@@ -48,7 +48,9 @@ npm run tauri:build    # produces installers in src-tauri/target/release/bundle/
 - **B1 (this):** scaffold — native window loads the exported app.
 - **B2 (next):** native AI bridge — real BYO-key provider calls, no proxy. This also fixes the
   current web quirk where the proxy uses a server env key instead of the founder's stored key.
-- **B4:** tray icon, native notifications, global hotkey.
+- **B4 (done):** tray icon (Show / Quit), native notifications, global hotkey
+  **`Cmd/Ctrl+Shift+K`** to summon the window, and **close-to-tray** (the window hides instead of
+  quitting so the co-founder keeps running — quit from the tray menu).
 - **B5:** background signal scan → native notifications (relies on close-to-tray keeping the
   webview alive).
 - **B6:** cross-platform CI build + installers.
