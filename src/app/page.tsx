@@ -40,6 +40,7 @@ import SeedScanBanner from "@/components/home/SeedScanBanner";
 import CoFounderDock from "@/components/cofounder/CoFounderDock";
 import { isFeatureEnabled } from "@/lib/feature-flags";
 import { initDesktopBridge } from "@/lib/desktop-bridge";
+import { startSignalWatch } from "@/lib/desktop-signal-watch";
 import { generateSystemNotifications, getUnreadCount } from "@/lib/support";
 import { showToast, subscribeToToast } from "@/lib/toast";
 import type { SyncStatus } from "@/lib/supabase";
@@ -190,6 +191,9 @@ function HomePage() {
 
   // On the desktop build, route AI calls through the native bridge instead of /api/ai.
   useEffect(() => { void initDesktopBridge(); }, []);
+
+  // On desktop, watch for high-severity signals and fire native notifications (no-op on web).
+  useEffect(() => startSignalWatch(), []);
   const [syncStatus, setSyncStatusState] = useState(() => getSyncStatus());
   const [toast, setToast] = useState<{ message: string; error: boolean } | null>(null);
 
