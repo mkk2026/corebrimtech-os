@@ -13,6 +13,8 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: ["./vitest.setup.ts"],
+    // Coverage instrumentation slows interaction-heavy RTL flows; give them headroom.
+    testTimeout: 15000,
     include: ["src/**/*.{test,spec}.{ts,tsx}"],
     coverage: {
       provider: "v8",
@@ -22,6 +24,7 @@ export default defineConfig({
         "src/lib/auto-research.ts",
         "src/lib/feature-flags.ts",
         "src/lib/seed-scan-store.ts",
+        "src/lib/ai-transport.ts",
         "src/lib/cofounder/**/*.ts",
         "src/components/cofounder/**/*.tsx",
         "src/components/onboarding/Onboarding.tsx",
