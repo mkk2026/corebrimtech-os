@@ -27,6 +27,7 @@ export default defineConfig({
         "src/lib/ai-transport.ts",
         "src/lib/desktop-bridge.ts",
         "src/lib/checks.ts",
+        "src/lib/desktop-notify.ts",
         "src/lib/cofounder/**/*.ts",
         "src/components/cofounder/**/*.tsx",
         "src/components/onboarding/Onboarding.tsx",
