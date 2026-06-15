@@ -14,6 +14,7 @@ import {
   getPreferredProvider, setPreferredProvider,
   type AIProvider
 } from "@/lib/llm";
+import { checkEnv } from "@/lib/checks";
 
 function StatusDot({ ok }: { ok: boolean }) {
   return (
@@ -71,8 +72,7 @@ export default function SettingsPanel() {
   const [preferredProvider, setPreferredProviderState] = useState<AIProvider>("claude");
 
   useEffect(() => {
-    fetch("/api/check-env")
-      .then((res) => res.json())
+    checkEnv()
       .then((data) => {
         setAnthropicConfigured(data.anthropicConfigured === true);
         setGoogleConfigured(data.googleConfigured === true);
