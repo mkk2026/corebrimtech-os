@@ -37,3 +37,12 @@ Deferred work captured during the CEO plan review of the onboarding + auto-intel
   skip-friendly flow; refresh-mid-onboarding is rare. Effort: S.
 - [ ] **Confetti micro-celebration on "Launch my OS".** Small dopamine hit at the finish line.
   Effort: S.
+
+## Desktop follow-ups (from Epic B)
+
+- [ ] **Code-signing & notarization.** Unsigned installers trigger OS warnings (macOS Gatekeeper,
+  Windows SmartScreen). Add an Apple Developer cert + notarization and a Windows code-signing cert
+  to the release workflow. Effort: M (mostly cert acquisition). P2.
+- [ ] **Auto-update.** Wire the Tauri updater plugin so shipped apps update themselves. Effort: M. P2.
+- [ ] **Quit-state background signals.** B5's watcher needs the webview alive (close-to-tray). For a
+  truly-quit background scan, move the scheduler Rust-side + mirror signal data to a file. Effort: L. P3.
