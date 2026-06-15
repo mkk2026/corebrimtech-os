@@ -55,3 +55,20 @@ npm run tauri:build    # produces installers in src-tauri/target/release/bundle/
 
 > Note: the desktop build is verified on your machine — this environment lacks the OS webview libs,
 > so the scaffold's native compile has not been run here.
+
+## Releasing (cross-platform installers)
+
+CI (`.github/workflows/desktop-release.yml`) builds Windows/macOS/Linux installers and attaches
+them to a **draft** GitHub Release.
+
+```bash
+# one-time: generate + commit app icons (tauri build requires them)
+npm run tauri icon path/to/logo.png
+git add src-tauri/icons && git commit -m "chore: app icons"
+
+# cut a release
+git tag v0.1.0 && git push origin v0.1.0   # → triggers the matrix build
+```
+
+You can also run it manually from the Actions tab (workflow_dispatch). Code-signing / notarization
+(for trusted installs) is a follow-up — see TODOS.md.
