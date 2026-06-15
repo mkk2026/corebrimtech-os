@@ -39,6 +39,7 @@ import Onboarding from "@/components/onboarding/Onboarding";
 import SeedScanBanner from "@/components/home/SeedScanBanner";
 import CoFounderDock from "@/components/cofounder/CoFounderDock";
 import { isFeatureEnabled } from "@/lib/feature-flags";
+import { initDesktopBridge } from "@/lib/desktop-bridge";
 import { generateSystemNotifications, getUnreadCount } from "@/lib/support";
 import { showToast, subscribeToToast } from "@/lib/toast";
 import type { SyncStatus } from "@/lib/supabase";
@@ -186,6 +187,9 @@ function HomePage() {
   // Hydration gate: avoid an onboarding/app flash before client state is known.
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+
+  // On the desktop build, route AI calls through the native bridge instead of /api/ai.
+  useEffect(() => { void initDesktopBridge(); }, []);
   const [syncStatus, setSyncStatusState] = useState(() => getSyncStatus());
   const [toast, setToast] = useState<{ message: string; error: boolean } | null>(null);
 
