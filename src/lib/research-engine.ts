@@ -3,6 +3,7 @@
 
 import { proxyHeaders } from "@/lib/proxy";
 import { fetchWithTimeout, getAnthropicError } from "./anthropic";
+import { checkLinkReachable } from "./checks";
 
 export interface SearchResult {
   title: string;
@@ -396,23 +397,11 @@ export async function* runResearch(
 
 // ── LINK VALIDATION (real runs only) ─────────────────────────────────────────
 
-const LINK_CHECK_TIMEOUT_MS = 8_000;
 const LINK_CHECK_CONCURRENCY = 5;
 
-/** Check from browser via API route to avoid CORS; server-side could call fetch(url) directly. */
+/** Check link reachability — web: /api/check-link (avoids CORS); desktop: native check_link. */
 async function checkUrlReachable(url: string): Promise<boolean> {
-  if (!url || (!url.startsWith("http://") && !url.startsWith("https://"))) return false;
-  const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), LINK_CHECK_TIMEOUT_MS);
-  try {
-    const res = await fetch(`/api/check-link?url=${encodeURIComponent(url)}`, { signal: controller.signal });
-    clearTimeout(id);
-    const data = (await res.json()) as { active?: boolean };
-    return data.active === true;
-  } catch {
-    clearTimeout(id);
-    return false;
-  }
+  return checkLinkReachable(url);
 }
 
 async function checkUrlReachableSafe(url: string): Promise<boolean> {
