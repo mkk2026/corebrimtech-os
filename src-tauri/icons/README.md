@@ -1,16 +1,12 @@
 # App icons
 
-Tauri bundles these icons (referenced in `tauri.conf.json` → `bundle.icon`). They are **not**
-committed because they're generated binaries. Generate them once from a single square source PNG
-(≥ 1024×1024 recommended):
+These are the committed app icons (referenced in `tauri.conf.json` → `bundle.icon`, and required by
+`generate_context!()` at build time). They were generated from `source-logo.png` (the amber "CBT"
+mark) with:
 
 ```bash
-# from the repo root, after installing the Tauri CLI
-npm run tauri icon path/to/logo.png
+cargo tauri icon src-tauri/icons/source-logo.png
 ```
 
-This produces `32x32.png`, `128x128.png`, `128x128@2x.png`, `icon.icns` (macOS), `icon.ico`
-(Windows), and the Android/iOS sets, writing them here.
-
-Until you run it, `npm run tauri:dev` works (it falls back to a default window icon), but
-`npm run tauri:build` requires these files.
+To rebrand, replace `source-logo.png` with a ≥ 1024×1024 square PNG and re-run that command, then
+commit the regenerated files.
