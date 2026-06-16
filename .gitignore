@@ -43,3 +43,6 @@ next-env.d.ts
 
 #Ignore cursor AI rules
 .cursor/rules/codacy.mdc
+
+# Temp stash used by scripts/build-desktop.mjs (API routes moved aside during static export)
+/.api-disabled
