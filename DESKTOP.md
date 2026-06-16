@@ -74,3 +74,33 @@ git tag v0.1.0 && git push origin v0.1.0   # → triggers the matrix build
 
 You can also run it manually from the Actions tab (workflow_dispatch). Code-signing / notarization
 (for trusted installs) is a follow-up — see TODOS.md.
+
+## Troubleshooting
+
+### `tauri dev` → `unrecognized subcommand '/usr/bin/nsolid'` + Segmentation fault
+
+Your `node` is **N|Solid** (NodeSource), and the `@tauri-apps/cli` npm wrapper's native binary
+mis-parses argv under N|Solid. Use the **Rust-native CLI** instead — it has no node dependency:
+
+```bash
+cargo install tauri-cli --version "^2.0" --locked   # one-time (~15 min compile)
+cargo tauri dev       # instead of: npm run tauri:dev
+cargo tauri build     # instead of: npm run tauri:build
+cargo tauri icon ./public/your-logo.png
+```
+
+(Alternatively, switch to stock Node.js via `nvm install 22 && nvm use 22`, after which the
+`npm run tauri:*` scripts work too.)
+
+### Linux system dependencies (Debian / Kali / Ubuntu)
+
+```bash
+sudo apt update
+sudo apt install -y libwebkit2gtk-4.1-dev libgtk-3-dev libappindicator3-dev \
+  librsvg2-dev patchelf build-essential libssl-dev
+```
+
+### `tauri icon` parse error
+
+Pass a **real** path to a square PNG — not the literal placeholder. The `<...>` in docs means
+"substitute your file", e.g. `cargo tauri icon ./public/logo.png`.
