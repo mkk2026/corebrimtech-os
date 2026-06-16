@@ -1,133 +1,226 @@
-# CORE BRIM TECH OS
+<div align="center">
 
-An autonomous operating system for founders. Built to run 24/7, minimize costs, and maximize output.
+<img src=".github/assets/logo.png" alt="CoreBrimTech OS" width="120" height="120" />
 
-## What It Is
+# CoreBrimTech OS
 
-CORE BRIM TECH OS is a comprehensive founder dashboard with 25+ integrated modules:
+### The operating system for startup founders — with an AI co-founder built in.
 
-- **Intelligence**: Founder Brain, Competitor Intel, Deep Research Engine
-- **Build**: Hackathon Builder, Auto-Scout
-- **Operations**: Goals & OKRs, Session Brain, Focus Mode
-- **Money**: Revenue Tracking, Grant Tracker, Invoice Generator
-- **Autonomous**: Skill Engine, Away Mode, Scheduler
-- **Reports**: Weekly Reports, Investor View, API Cost Optimizer
+Research your market, build, track your money, and grow — in one dark, fast dashboard.
+Now available as a **native desktop app** for macOS, Windows, and Linux.
 
-## Key Features
+<p>
+  <img alt="Next.js" src="https://img.shields.io/badge/Next.js-16-black?logo=next.js" />
+  <img alt="React" src="https://img.shields.io/badge/React-19-149eca?logo=react&logoColor=white" />
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript&logoColor=white" />
+  <img alt="Tauri" src="https://img.shields.io/badge/Tauri-2-24c8db?logo=tauri&logoColor=white" />
+  <img alt="Tailwind" src="https://img.shields.io/badge/Tailwind-4-38bdf8?logo=tailwindcss&logoColor=white" />
+  <img alt="License" src="https://img.shields.io/badge/license-Proprietary-lightgrey" />
+</p>
 
-### 80-90% API Cost Savings
-The API Cost Optimizer helps users achieve massive savings through:
-- Smart model routing (Haiku/Sonnet/Opus/Gemini)
-- Aggressive caching (7-day TTL)
-- Background task batching
-- Gemini free tier preference
-- Budget guardrails with auto-downgrade
+[Download](#-download) · [Features](#-features) · [Quick start](#-quick-start) · [Desktop app](#-desktop-app) · [Architecture](#-architecture) · [Roadmap](#-roadmap)
 
-### Real Data Only
-No mock data. No auto-populated examples. The OS only works with:
-- Your tracked grants (not discovery database)
-- Your actual clients and pipeline
-- Your created goals and milestones
-- Your research and decisions
+</div>
 
-### Autonomous 24/7 Operation
-- Background task queue for non-urgent operations
-- Automatic cost optimization
-- Smart notifications only from real deadlines
-- Supabase sync for cross-device persistence
+---
 
-## Tech Stack
+## ✨ Why CoreBrimTech OS
 
-- **Framework**: Next.js 16 + React 19
-- **Styling**: Tailwind CSS 4 + shadcn/ui
-- **AI**: Anthropic Claude + Google Gemini
-- **Database**: Supabase (PostgreSQL)
-- **State**: localStorage with cloud sync
+Most founder tools are a graveyard of empty dashboards. CoreBrimTech OS is different on two counts:
 
-## Getting Started
+- **It has a brain.** A built-in **AI co-founder** that knows your runway, deals, goals, and energy — answers questions, and *proactively* taps you on the shoulder when something needs attention (short runway, stale pipeline, slipping goals).
+- **It runs where you work.** A real **native desktop app** (Tauri) with a tray icon, a global hotkey, and native notifications — so your co-founder can reach you even when the window is closed.
 
-1. Clone and install:
+> **No mock data, ever.** Every module shows your real data or a clean empty state — nothing is faked or pre-seeded.
+
+---
+
+## 🧠 The AI Co-Founder
+
+A persistent assistant docked in the corner of every screen.
+
+| | |
+|---|---|
+| **Ask anything** | "How's my runway?", "What should I focus on this week?" — grounded in your actual numbers across all modules. |
+| **Proactive nudges** | Watches for high-signal events (runway ≤ 4 months, empty pipeline while burning, goals at risk) and surfaces a one-click action. |
+| **Native notifications** | On desktop, it pings you with OS notifications from the tray — even with the window closed. |
+| **Bring your own key** | Your Anthropic (Claude) or Google (Gemini) key, stored locally. On desktop, calls go straight to the provider — no middleman. |
+
+---
+
+## 🚀 Features
+
+**37 integrated modules**, organized by what a founder actually does:
+
+| Area | Modules |
+|---|---|
+| 🔭 **Intelligence** | Founder Brain · Competitor Intel Engine · Market Gap Scanner · Deep Research Engine · Idea Intelligence |
+| 🛠️ **Build** | Hackathon Builder Agent · Hackathon Auto-Scout |
+| 🎯 **Operate** | Today · Command Center · Goals & OKRs · Session Brain · Meeting Prep · Decision Journal · Focus Mode · Energy Tracker |
+| 💰 **Money** | Burn Rate Tracker · Deal Pipeline · Revenue Agent · Grant Tracker · Invoice Generator · Proposal Generator |
+| 🤖 **Autonomous** | Skill Engine · Auto-Outreach · Away Mode · Scheduler |
+| 📊 **Report** | Weekly Review · Weekly Founder Report · Investor View · Portfolio & Wins |
+| ⚙️ **System** | Knowledge Base · SOPs & Playbooks · Notification Center · Email Templates · Data Export · API Cost Optimizer · Settings |
+
+### Highlights
+
+- **API Cost Optimizer** — smart model routing (Haiku/Sonnet/Opus/Gemini), aggressive caching, batching, and budget guardrails to keep AI spend low.
+- **Auto-intelligence onboarding** — type your company name and the OS researches your market (competitors + gaps) in the background before you click anything.
+- **Cloud sync** — local-first (instant) with optional Supabase write-through for cross-device persistence.
+- **Responsive + native** — works as a web app and a desktop app from the same codebase.
+
+---
+
+## 📦 Download
+
+Native installers are published on the [**Releases**](../../releases) page.
+
+| Platform | File |
+|---|---|
+| 🍎 **macOS** | `.dmg` (Apple Silicon + Intel universal) |
+| 🪟 **Windows** | `.msi` / `.exe` |
+| 🐧 **Linux** | `.AppImage` / `.deb` |
+
+> Builds are currently **unsigned** — your OS may warn on first launch (macOS: right-click → Open; Windows: "More info" → "Run anyway"). Code-signing is on the [roadmap](#-roadmap).
+
+Prefer to run from source? See [Quick start](#-quick-start).
+
+---
+
+## ⚡ Quick start
+
 ```bash
-git clone <repo>
+git clone https://github.com/mkk2026/corebrimtech-os.git
 cd corebrimtech-os
 npm install
+npm run dev          # → http://localhost:3000
 ```
 
-2. Set up environment variables in `.env.local`:
-```
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_key
-ANTHROPIC_API_KEY=your_claude_key
-```
+On first run, complete onboarding and add your AI key in **Settings**. Optionally configure cloud sync in `.env.local`:
 
-3. Run the development server:
 ```bash
-npm run dev
+# Optional — enables Supabase cross-device sync
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# Optional — server-side AI proxy for the web build
+ANTHROPIC_API_KEY=your_claude_key
+GOOGLE_API_KEY=your_gemini_key
 ```
 
-4. Open http://localhost:3000
+---
 
-5. First step: Complete **Founder Brain** setup so the OS knows your company context
+## 🖥️ Desktop app
 
-## Architecture
+The desktop build wraps the app in a native window via **Tauri** (Rust). It uses a static export and a
+native AI bridge instead of server API routes, so your API key calls the provider directly.
 
-![CORE BRIM TECH OS Architecture](/cbt-os-architecture.png)
+```bash
+# one-time: install Tauri's prerequisites — see DESKTOP.md
+cargo tauri dev      # run the desktop app in development
+cargo tauri build    # build installers into src-tauri/target/release/bundle/
+```
 
-The OS is built around the **Founder Brain** - the central intelligence that feeds context to all AI-powered modules. Data flows through:
+Full prerequisites, the N|Solid/Node troubleshooting note, and the release flow live in **[DESKTOP.md](DESKTOP.md)**.
 
-1. **Intelligence Layer** (Claude + Gemini) - AI processing with smart model routing
-2. **Founder Brain** - Central company knowledge store
-3. **Operations** - Goals, sessions, focus mode, SOPs
-4. **Revenue & Grants** - Money tracking and opportunity discovery
-5. **API Cost Optimizer** - 80-90% savings through caching and batching
-6. **Build & Auto-Scout** - Hackathon builder and opportunity finder
-7. **Supabase** - Cloud sync for cross-device persistence
+**Cutting a release** (cross-platform installers via GitHub Actions):
 
-All modules run 24/7 with autonomous background processing.
+```bash
+git tag v0.1.0 && git push origin v0.1.0
+```
 
-## Project Structure
+---
+
+## 🏗️ Architecture
+
+![CoreBrimTech OS Architecture](public/cbt-os-architecture.png)
+
+Everything orbits the **Founder Brain** — a central, local-first knowledge store that feeds context to
+every AI module (and to the co-founder). The same codebase serves two targets:
+
+```
+                         ┌──────────────────────────┐
+                         │       Founder Brain        │  ← your company context
+                         └────────────┬──────────────┘
+                                      │
+        ┌───────────────┬─────────────┼──────────────┬───────────────┐
+        ▼               ▼             ▼               ▼               ▼
+   Intelligence       Money       Co-Founder       Operate         Reports
+   (research,       (burn, deals, (chat +          (goals,        (reviews,
+    competitors)     revenue)      proactive)       sessions)      investor)
+        └───────────────┴─────────────┬──────────────┴───────────────┘
+                                      ▼
+                        AI transport seam  (lib/ai-transport)
+                          ┌───────────┴────────────┐
+                    web → /api/ai proxy      desktop → native Rust bridge
+                                      ▼
+                          Claude · Gemini   +   Supabase (sync)
+```
+
+---
+
+## 🧰 Tech stack
+
+- **Framework** — Next.js 16 (App Router) · React 19 · TypeScript
+- **UI** — Tailwind CSS 4 · shadcn/ui · lucide icons
+- **Desktop** — Tauri 2 (Rust) — tray, notifications, global hotkey, native HTTP bridge
+- **AI** — Anthropic Claude · Google Gemini (BYO key)
+- **Data** — local-first (`localStorage`) with Supabase (PostgreSQL) write-through sync
+- **Testing** — Vitest · React Testing Library (80%+ coverage on new code)
+
+---
+
+## 🧪 Development
+
+```bash
+npm run dev            # web dev server
+npm run build          # web production build
+npm run build:desktop  # static export for the desktop bundle
+npm run test           # run the test suite
+npm run test:coverage  # tests with coverage
+npm run lint           # ESLint
+cargo tauri dev        # desktop app (see DESKTOP.md)
+```
+
+### Project structure
 
 ```
 src/
-├── app/                    # Next.js App Router
-│   ├── api/               # API routes
-│   ├── layout.tsx         # Root layout
-│   ├── page.tsx           # Main dashboard
-│   └── globals.css        # Global styles
-├── components/            # React components
-│   ├── ui/                # shadcn/ui components
-│   ├── brain/             # Founder Brain
-│   ├── optimizer/         # API Cost Optimizer
-│   ├── money/             # Revenue, Grants, Invoices
-│   └── ... (20+ modules)
-└── lib/                   # Business logic
-    ├── api-optimizer.ts   # Cost optimization engine
-    ├── supabase.ts        # Database layer
-    ├── founder-brain.ts   # Core company data
-    └── ... (20+ modules)
+├── app/              # Next.js App Router (page.tsx routes 37 modules)
+│   └── api/          # AI proxy + checks (web only; bypassed on desktop)
+├── components/       # feature modules (brain, money, cofounder, onboarding, …)
+└── lib/              # business logic
+    ├── cofounder/    # context aggregator, chat engine, signal engine, nudges
+    ├── ai-transport  # web proxy ↔ native bridge seam
+    ├── founder-brain # central company data
+    └── …
+src-tauri/            # Rust desktop shell (AI bridge, tray, notifications)
 ```
 
-## Development
+---
 
-```bash
-npm run dev      # Start dev server
-npm run build    # Production build
-npm run lint     # Run ESLint
-```
+## 🗺️ Roadmap
 
-## Deployment
+- [x] AI co-founder — reactive chat + proactive signal nudges
+- [x] Native desktop app (macOS / Windows / Linux) with tray + notifications
+- [x] Cross-platform release CI
+- [ ] Code-signing & notarization (trusted installs)
+- [ ] Auto-update (Tauri updater)
+- [ ] Team / multi-founder sync
 
-Deploy on Vercel:
-```bash
-vercel --prod
-```
+See [TODOS.md](TODOS.md) for the detailed backlog.
 
-Or build and host anywhere:
-```bash
-npm run build
-# Output in .next/ directory
-```
+---
 
-## License
+## 🤝 Contributing
 
-Private - Core Brim Tech Internal Use
+This is an early-stage product. Issues and ideas are welcome via the issue tracker.
+Development standards: tests-first, no mock data, conventional commits.
+
+## 📄 License
+
+Proprietary — © Core Brim Tech. All rights reserved.
+
+<div align="center">
+<sub>Built in Freetown 🇸🇱 for founders who move fast.</sub>
+</div>
