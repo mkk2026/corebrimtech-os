@@ -1,10 +1,8 @@
-name: Desktop Release
+name: Release
 
 # Build cross-platform desktop installers (Windows / macOS / Linux) and attach them to a draft
-# GitHub Release. Triggered by pushing a version tag (e.g. `v0.1.0`) or run manually.
-#
-# Prerequisites (one-time): commit app icons under src-tauri/icons/ (run `npm run tauri icon
-# <logo.png>` locally and commit the output) — `tauri build` requires them. See DESKTOP.md.
+# GitHub Release. Triggered by pushing a version tag (e.g. v0.1.0) or run manually.
+# Prereq: app icons under src-tauri/icons/ must be committed (see DESKTOP.md).
 
 on:
   push:
