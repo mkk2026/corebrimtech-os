@@ -25,85 +25,70 @@ interface NavSection {
   items: NavItem[];
 }
 
+// Information architecture is tiered for focus: the daily-core sections (core, money,
+// intelligence) are expanded by default; everything else is grouped and collapsed so the OS
+// reads as one focused product, not a 37-module tool dump. No module is removed — just demoted.
 const NAV_SECTIONS: NavSection[] = [
   {
     title: "",
     key: "core",
     items: [
-      { id: "today",         label: "Today",             icon: Calendar },
       { id: "home",          label: "Command Center",    icon: Home },
-      { id: "notifications", label: "Notifications",     icon: Bell },
-    ],
-  },
-  {
-    title: "INTELLIGENCE",
-    key: "intelligence",
-    items: [
+      { id: "today",         label: "Today",             icon: Calendar },
       { id: "brain",         label: "Founder Brain",     icon: Cpu },
-      { id: "competitor",    label: "Intel Engine",       icon: Shield },
-      { id: "marketgaps",    label: "Market Gaps",        icon: ScanLine, highlight: true },
-      { id: "research",      label: "Deep Research",      icon: Search },
-      { id: "knowledge",     label: "Knowledge Base",     icon: BookOpen },
-    ],
-  },
-  {
-    title: "BUILD",
-    key: "build",
-    items: [
-      { id: "hackathon",     label: "Hackathon Builder",  icon: Code2 },
-      { id: "scout",         label: "Auto-Scout",         icon: Radar },
-    ],
-  },
-  {
-    title: "OPERATIONS",
-    key: "operations",
-    items: [
-      { id: "goals",         label: "Goals & OKRs",       icon: Target },
-      { id: "session",       label: "Session Brain",      icon: Clock },
-      { id: "ideas",         label: "Idea Intelligence",  icon: Lightbulb },
-      { id: "focus",         label: "Focus Mode",         icon: Zap },
-      { id: "meetings",      label: "Meeting Prep",       icon: Briefcase, highlight: true },
-      { id: "sops",          label: "SOPs & Playbooks",   icon: ClipboardList },
-    ],
-  },
-  {
-    title: "FOUNDER TOOLS",
-    key: "founder-tools",
-    items: [
-      { id: "decisions",     label: "Decision Journal",   icon: JournalIcon, highlight: true },
-      { id: "burnrate",      label: "Burn Rate",          icon: Flame, highlight: true },
-      { id: "pipeline",      label: "Deal Pipeline",      icon: TrendingUp, highlight: true },
-      { id: "proposals",     label: "Proposals",          icon: ProposalIcon, highlight: true },
-      { id: "energy",        label: "Energy Tracker",     icon: Activity, highlight: true },
-      { id: "weeklyreview",  label: "Weekly Review",      icon: CalendarDays, highlight: true },
+      { id: "goals",         label: "Goals & OKRs",      icon: Target },
     ],
   },
   {
     title: "MONEY",
     key: "money",
     items: [
+      { id: "burnrate",      label: "Burn Rate",          icon: Flame },
+      { id: "pipeline",      label: "Deal Pipeline",      icon: TrendingUp },
       { id: "revenue",       label: "Revenue & Clients",  icon: DollarSign },
       { id: "grants",        label: "Grant Tracker",      icon: Trophy },
       { id: "invoices",      label: "Invoices",           icon: FileText },
+      { id: "proposals",     label: "Proposals",          icon: ProposalIcon },
     ],
   },
   {
-    title: "AUTONOMOUS",
-    key: "autonomous",
+    title: "INTELLIGENCE",
+    key: "intelligence",
     items: [
-      { id: "revenueagent",  label: "Revenue Agent",      icon: BotIcon, highlight: true },
-      { id: "skills",        label: "Skill Engine",       icon: Bot,      highlight: true },
-      { id: "outreach",      label: "Auto-Outreach",      icon: Mail,     highlight: true },
-      { id: "away",          label: "Away Mode",          icon: Plane,    highlight: true },
-      { id: "scheduler",     label: "Scheduler",          icon: Calendar, highlight: true },
+      { id: "research",      label: "Deep Research",      icon: Search },
+      { id: "competitor",    label: "Intel Engine",       icon: Shield },
+      { id: "marketgaps",    label: "Market Gaps",        icon: ScanLine },
+      { id: "ideas",         label: "Idea Intelligence",  icon: Lightbulb },
     ],
   },
   {
-    title: "PORTFOLIO",
-    key: "portfolio",
+    title: "GROW",
+    key: "grow",
     items: [
-      { id: "portfolio",     label: "Wins & Portfolio",   icon: Star },
+      { id: "outreach",      label: "Auto-Outreach",      icon: Mail },
+      { id: "revenueagent",  label: "Revenue Agent",      icon: BotIcon },
       { id: "templates",     label: "Email Templates",    icon: Mail },
+    ],
+  },
+  {
+    title: "PLAN & REFLECT",
+    key: "plan",
+    items: [
+      { id: "session",       label: "Session Brain",      icon: Clock },
+      { id: "focus",         label: "Focus Mode",         icon: Zap },
+      { id: "meetings",      label: "Meeting Prep",       icon: Briefcase },
+      { id: "decisions",     label: "Decision Journal",   icon: JournalIcon },
+      { id: "energy",        label: "Energy Tracker",     icon: Activity },
+      { id: "weeklyreview",  label: "Weekly Review",      icon: CalendarDays },
+    ],
+  },
+  {
+    title: "LIBRARY",
+    key: "library",
+    items: [
+      { id: "knowledge",     label: "Knowledge Base",     icon: BookOpen },
+      { id: "sops",          label: "SOPs & Playbooks",   icon: ClipboardList },
+      { id: "portfolio",     label: "Wins & Portfolio",   icon: Star },
     ],
   },
   {
@@ -112,19 +97,34 @@ const NAV_SECTIONS: NavSection[] = [
     items: [
       { id: "reports",       label: "Weekly Report",      icon: BarChart2 },
       { id: "investor",      label: "Investor View",      icon: LineChart },
-      { id: "optimizer",     label: "Cost Optimizer",     icon: TrendingUp },
+    ],
+  },
+  {
+    title: "LABS",
+    key: "labs",
+    items: [
+      { id: "hackathon",     label: "Hackathon Builder",  icon: Code2 },
+      { id: "scout",         label: "Auto-Scout",         icon: Radar },
+      { id: "skills",        label: "Skill Engine",       icon: Bot },
+      { id: "away",          label: "Away Mode",          icon: Plane },
+      { id: "scheduler",     label: "Scheduler",          icon: Calendar },
     ],
   },
   {
     title: "SYSTEM",
     key: "system",
     items: [
-      { id: "team",          label: "Team",               icon: Users, soon: true },
+      { id: "notifications", label: "Notifications",      icon: Bell },
+      { id: "optimizer",     label: "Cost Optimizer",     icon: TrendingUp },
       { id: "export",        label: "Data Export",        icon: Download },
+      { id: "team",          label: "Team",               icon: Users, soon: true },
       { id: "settings",      label: "Settings",           icon: Settings },
     ],
   },
 ];
+
+// Sections expanded on first load — the daily-core surfaces only.
+const DEFAULT_EXPANDED = ["core", "money", "intelligence"];
 
 // Find which section contains the active module
 function findSectionForModule(moduleId: string): string | null {
@@ -147,8 +147,8 @@ export default function Sidebar({ activeModule, onModuleChange, unreadNotificati
   const [collapsed, setCollapsed] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(() => {
     const activeSection = findSectionForModule(activeModule);
-    // Core section (no title) is always expanded, plus the active section
-    const initial = new Set(["core"]);
+    // Daily-core sections expanded by default, plus whichever section holds the active module.
+    const initial = new Set(DEFAULT_EXPANDED);
     if (activeSection) initial.add(activeSection);
     return initial;
   });
