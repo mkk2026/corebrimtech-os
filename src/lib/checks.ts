@@ -4,11 +4,12 @@
  */
 
 import { isDesktop } from "./ai-transport";
-import { getStoredAnthropicKey, getStoredGoogleKey } from "./llm";
+import { getStoredAnthropicKey, getStoredGoogleKey, getStoredNvidiaKey } from "./llm";
 
 export interface EnvStatus {
   anthropicConfigured: boolean;
   googleConfigured: boolean;
+  nvidiaConfigured: boolean;
   proxySecretConfigured: boolean;
 }
 
@@ -18,6 +19,7 @@ export async function checkEnv(): Promise<EnvStatus> {
     return {
       anthropicConfigured: !!getStoredAnthropicKey(),
       googleConfigured: !!getStoredGoogleKey(),
+      nvidiaConfigured: !!getStoredNvidiaKey(),
       proxySecretConfigured: false,
     };
   }

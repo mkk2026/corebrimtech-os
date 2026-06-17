@@ -20,7 +20,7 @@ export async function initDesktopBridge(): Promise<void> {
       request: {
         ...payload,
         // The native bridge owns provider/key selection from local storage (true BYO key).
-        provider: active?.provider === "google" ? "google" : (payload.provider ?? "claude"),
+        provider: active?.provider ?? payload.provider ?? "claude",
         apiKey: active?.apiKey ?? "",
       },
     });
