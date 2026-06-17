@@ -48,6 +48,7 @@ pub async fn ai_request(request: AiRequest) -> Result<AiResponse, String> {
 
     match request.provider.as_str() {
         "google" => call_google(request).await,
+        "nvidia" => call_nvidia(request).await,
         _ => call_claude(request).await,
     }
 }
@@ -130,6 +131,56 @@ async fn call_google(req: AiRequest) -> Result<AiResponse, String> {
             // Normalize Google's response to the Claude-like shape the TS layer expects.
             let text = body
                 .pointer("/candidates/0/content/parts/0/text")
+                .and_then(|t| t.as_str())
+                .unwrap_or("");
+            Ok(AiResponse {
+                ok: true,
+                status,
+                data: json!({ "content": [{ "type": "text", "text": text }], "model": model }),
+            })
+        }
+        Err(e) => Err(e.to_string()),
+    }
+}
+
+async fn call_nvidia(req: AiRequest) -> Result<AiResponse, String> {
+    let model = req.model.unwrap_or_else(|| "meta/llama-3.3-70b-instruct".to_string());
+    let max_tokens = req.max_tokens.unwrap_or(2000);
+
+    let mut messages: Vec<Value> = req.messages.unwrap_or_default();
+    if messages.is_empty() {
+        if let Some(prompt) = req.prompt {
+            messages.push(json!({ "role": "user", "content": prompt }));
+        }
+    }
+    if let Some(system) = req.system {
+        messages.insert(0, json!({ "role": "system", "content": system }));
+    }
+    if messages.is_empty() {
+        return Ok(bad_request("No messages or prompt provided"));
+    }
+
+    let payload = json!({ "model": model, "messages": messages, "max_tokens": max_tokens });
+    let client = reqwest::Client::new();
+    let res = client
+        .post("https://integrate.api.nvidia.com/v1/chat/completions")
+        .header("content-type", "application/json")
+        .header("authorization", format!("Bearer {}", req.api_key))
+        .json(&payload)
+        .send()
+        .await;
+
+    match res {
+        Ok(resp) => {
+            let status = resp.status().as_u16();
+            let ok = resp.status().is_success();
+            let body: Value = resp.json().await.unwrap_or_else(|_| json!({}));
+            if !ok {
+                return Ok(AiResponse { ok, status, data: body });
+            }
+            // Normalize OpenAI shape to the Claude-like content array the TS layer expects.
+            let text = body
+                .pointer("/choices/0/message/content")
                 .and_then(|t| t.as_str())
                 .unwrap_or("");
             Ok(AiResponse {

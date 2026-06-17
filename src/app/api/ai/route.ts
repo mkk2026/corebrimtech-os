@@ -14,7 +14,7 @@ export const maxDuration = 120; // 2 min for long AI calls
  */
 
 interface AIRequestBody {
-  provider?: "claude" | "google";
+  provider?: "claude" | "google" | "nvidia";
   model?: string;
   messages?: { role: string; content: string }[];
   system?: string;
@@ -43,6 +43,9 @@ export async function POST(req: NextRequest) {
 
     if (provider === "google") {
       return handleGoogle(body);
+    }
+    if (provider === "nvidia") {
+      return handleNvidia(body);
     }
     return handleClaude(body);
   } catch (e) {
@@ -167,4 +170,54 @@ async function handleGoogle(body: AIRequestBody): Promise<NextResponse> {
     model,
     usage: { input_tokens: 0, output_tokens: 0 }, // Google doesn't always return this
   });
+}
+
+// ── NVIDIA HANDLER (NIM — OpenAI-compatible, free tier) ────────────────────────
+
+async function handleNvidia(body: AIRequestBody): Promise<NextResponse> {
+  const apiKey = process.env.NVIDIA_API_KEY;
+  if (!apiKey || apiKey === "your_nvidia_api_key") {
+    return NextResponse.json(
+      { error: { message: "NVIDIA_API_KEY not configured on server" } },
+      { status: 503 }
+    );
+  }
+
+  const model = body.model ?? "meta/llama-3.3-70b-instruct";
+  const maxTokens = body.max_tokens ?? 2000;
+
+  const messages = body.messages ?? [];
+  if (messages.length === 0 && body.prompt) {
+    messages.push({ role: "user", content: body.prompt });
+  }
+  if (body.system) {
+    messages.unshift({ role: "system", content: body.system });
+  }
+  if (messages.length === 0) {
+    return NextResponse.json(
+      { error: { message: "No messages or prompt provided" } },
+      { status: 400 }
+    );
+  }
+
+  const res = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({ model, messages, max_tokens: maxTokens }),
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    return NextResponse.json(
+      { error: data.error ?? { message: `NVIDIA API ${res.status}` } },
+      { status: res.status }
+    );
+  }
+
+  // Normalize OpenAI shape to the Claude-like content array the client expects.
+  const text = data.choices?.[0]?.message?.content ?? "";
+  return NextResponse.json({ content: [{ type: "text", text }], model });
 }

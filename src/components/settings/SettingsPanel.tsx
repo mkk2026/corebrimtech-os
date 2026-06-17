@@ -69,6 +69,7 @@ export default function SettingsPanel() {
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   const [anthropicConfigured, setAnthropicConfigured] = useState<boolean | null>(null);
   const [googleConfigured, setGoogleConfigured] = useState<boolean | null>(null);
+  const [nvidiaConfigured, setNvidiaConfigured] = useState<boolean | null>(null);
   const [preferredProvider, setPreferredProviderState] = useState<AIProvider>("claude");
 
   useEffect(() => {
@@ -76,10 +77,12 @@ export default function SettingsPanel() {
       .then((data) => {
         setAnthropicConfigured(data.anthropicConfigured === true);
         setGoogleConfigured(data.googleConfigured === true);
+        setNvidiaConfigured(data.nvidiaConfigured === true);
       })
       .catch(() => {
         setAnthropicConfigured(false);
         setGoogleConfigured(false);
+        setNvidiaConfigured(false);
       });
   }, []);
 
@@ -138,6 +141,8 @@ export default function SettingsPanel() {
             <p className="text-blue-400">ANTHROPIC_API_KEY=sk-ant-...</p>
             <p className="text-neutral-600 mt-3 mb-2"># Google (optional) — get from: aistudio.google.com</p>
             <p className="text-blue-400">GOOGLE_API_KEY=AIza...</p>
+            <p className="text-neutral-600 mt-3 mb-2"># NVIDIA (free models) — get from: build.nvidia.com → API Keys</p>
+            <p className="text-emerald-400">NVIDIA_API_KEY=nvapi-...</p>
           </div>
 
           <div className="text-xs text-neutral-600 bg-amber-400/5 border border-amber-400/15 rounded-lg p-3">
@@ -167,6 +172,11 @@ export default function SettingsPanel() {
               envKey="GOOGLE_API_KEY"
               value={googleConfigured ? "configured" : undefined}
             />
+            <EnvRow
+              label="NVIDIA API Key (free models)"
+              envKey="NVIDIA_API_KEY"
+              value={nvidiaConfigured ? "configured" : undefined}
+            />
           </div>
 
           <div className="mt-4 pt-4 border-t border-neutral-800">
@@ -187,18 +197,30 @@ export default function SettingsPanel() {
               >
                 Google (Gemini)
               </button>
+              <button
+                type="button"
+                onClick={() => handleProviderChange("nvidia")}
+                className={`flex-1 text-xs font-bold py-2 rounded-lg border transition-colors ${preferredProvider === "nvidia" ? "border-emerald-400 bg-emerald-400/10 text-emerald-400" : "border-neutral-700 text-neutral-500 hover:text-neutral-300"}`}
+              >
+                NVIDIA (free)
+              </button>
             </div>
 
-            {(anthropicConfigured || googleConfigured) && (
+            {(anthropicConfigured || googleConfigured || nvidiaConfigured) && (
               <p className="text-xs text-emerald-400 mt-3 flex items-center gap-1.5">
                 <CheckCircle className="w-3.5 h-3.5" />
-                {preferredProvider === "google" && googleConfigured ? "Google (Gemini)" : "Claude"} is your active provider. Research, Hackathon, and Scout modules require Claude.
+                {preferredProvider === "google" && googleConfigured
+                  ? "Google (Gemini)"
+                  : preferredProvider === "nvidia" && nvidiaConfigured
+                    ? "NVIDIA"
+                    : "Claude"}{" "}
+                is your active provider. Research, Hackathon, and Scout modules work best with Claude.
               </p>
             )}
-            {!anthropicConfigured && !googleConfigured && (
+            {!anthropicConfigured && !googleConfigured && !nvidiaConfigured && (
               <p className="text-xs text-red-400/80 mt-3 flex items-center gap-1.5">
                 <AlertCircle className="w-3.5 h-3.5" />
-                No AI provider configured. Add ANTHROPIC_API_KEY or GOOGLE_API_KEY to .env.local.
+                No AI provider configured. Add ANTHROPIC_API_KEY, GOOGLE_API_KEY, or NVIDIA_API_KEY to .env.local.
               </p>
             )}
           </div>
