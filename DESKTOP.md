@@ -72,8 +72,10 @@ git add src-tauri/icons && git commit -m "chore: app icons"
 git tag v0.1.0 && git push origin v0.1.0   # → triggers the matrix build
 ```
 
-You can also run it manually from the Actions tab (workflow_dispatch). Code-signing / notarization
-(for trusted installs) is a follow-up — see TODOS.md.
+You can also run it manually from the Actions tab (workflow_dispatch).
+
+**Signed installs (no OS warnings):** the release workflow signs automatically once you add the
+certificate secrets — see **[SIGNING.md](SIGNING.md)**. Until then it builds unsigned.
 
 ## Troubleshooting
 

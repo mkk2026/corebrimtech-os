@@ -40,9 +40,10 @@ Deferred work captured during the CEO plan review of the onboarding + auto-intel
 
 ## Desktop follow-ups (from Epic B)
 
-- [ ] **Code-signing & notarization.** Unsigned installers trigger OS warnings (macOS Gatekeeper,
-  Windows SmartScreen). Add an Apple Developer cert + notarization and a Windows code-signing cert
-  to the release workflow. Effort: M (mostly cert acquisition). P2.
+- [~] **Code-signing & notarization.** Workflow wiring **done** — macOS signing env passthrough is
+  in `release.yml` and activates when the `APPLE_*` secrets are added (see SIGNING.md). Remaining:
+  **acquire the certs** (Apple Developer $99/yr; Windows via Azure Trusted Signing or a CA cert) and
+  add the repo secrets. Effort: M (cert acquisition + verification). P2.
 - [ ] **Auto-update.** Wire the Tauri updater plugin so shipped apps update themselves. Effort: M. P2.
 - [ ] **Quit-state background signals.** B5's watcher needs the webview alive (close-to-tray). For a
   truly-quit background scan, move the scheduler Rust-side + mirror signal data to a file. Effort: L. P3.
