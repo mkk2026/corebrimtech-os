@@ -47,3 +47,15 @@ Deferred work captured during the CEO plan review of the onboarding + auto-intel
 - [ ] **Auto-update.** Wire the Tauri updater plugin so shipped apps update themselves. Effort: M. P2.
 - [ ] **Quit-state background signals.** B5's watcher needs the webview alive (close-to-tray). For a
   truly-quit background scan, move the scheduler Rust-side + mirror signal data to a file. Effort: L. P3.
+
+## Sync gaps (surfaced by the ruthless-cut eng-review)
+
+- [ ] **Cloud sync for Burn Rate + Deal Pipeline.** Both are kept core modules but write only to
+  `localStorage` — `founder_brain`, `goals`, and `research_library` sync to Supabase, but
+  `cbt_os_deals`, `cbt_os_expenses`, `cbt_os_revenue`, `cbt_os_burn_config` do not. A founder who
+  switches devices loses their runway + pipeline data.
+  **Where to start:** add these keys to `TABLE_TO_LOCALSTORAGE` in `src/lib/supabase.ts` (+ the
+  `TableName` union), create the matching Supabase tables, and add `dbUpsert(...)` calls in
+  `burn-rate.ts` / `deal-pipeline.ts` mutations (mirror how `goals.ts` and `research-storage.ts`
+  already do it). **Why deferred:** separate concern from de-bloat; needs the DB tables provisioned.
+  Effort: M. P2.
