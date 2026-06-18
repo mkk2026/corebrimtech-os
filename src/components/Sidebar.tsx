@@ -10,6 +10,7 @@ import {
   Flame, Activity, FileText as ProposalIcon, CalendarDays, Bot as BotIcon,
   Menu, X, ChevronDown, ChevronRight, PanelLeftClose, PanelLeft
 } from "lucide-react";
+import { getBrain } from "@/lib/founder-brain";
 
 interface NavItem {
   id: string;
@@ -25,106 +26,44 @@ interface NavSection {
   items: NavItem[];
 }
 
-// Information architecture is tiered for focus: the daily-core sections (core, money,
-// intelligence) are expanded by default; everything else is grouped and collapsed so the OS
-// reads as one focused product, not a 37-module tool dump. No module is removed — just demoted.
+// A focused founder OS: the few surfaces a founder actually needs day one. The AI co-founder
+// (floating dock) is the hub; these are the data surfaces it reasons over.
 const NAV_SECTIONS: NavSection[] = [
   {
     title: "",
     key: "core",
     items: [
-      { id: "home",          label: "Command Center",    icon: Home },
-      { id: "today",         label: "Today",             icon: Calendar },
-      { id: "brain",         label: "Founder Brain",     icon: Cpu },
-      { id: "goals",         label: "Goals & OKRs",      icon: Target },
+      { id: "home",     label: "Command Center", icon: Home },
+      { id: "brain",    label: "Founder Brain",  icon: Cpu },
+      { id: "goals",    label: "Goals & OKRs",   icon: Target },
     ],
   },
   {
     title: "MONEY",
     key: "money",
     items: [
-      { id: "burnrate",      label: "Burn Rate",          icon: Flame },
-      { id: "pipeline",      label: "Deal Pipeline",      icon: TrendingUp },
-      { id: "revenue",       label: "Revenue & Clients",  icon: DollarSign },
-      { id: "grants",        label: "Grant Tracker",      icon: Trophy },
-      { id: "invoices",      label: "Invoices",           icon: FileText },
-      { id: "proposals",     label: "Proposals",          icon: ProposalIcon },
+      { id: "burnrate", label: "Burn Rate & Runway", icon: Flame },
+      { id: "pipeline", label: "Deal Pipeline",      icon: TrendingUp },
     ],
   },
   {
-    title: "INTELLIGENCE",
-    key: "intelligence",
+    title: "MARKET",
+    key: "market",
     items: [
-      { id: "research",      label: "Deep Research",      icon: Search },
-      { id: "competitor",    label: "Intel Engine",       icon: Shield },
-      { id: "marketgaps",    label: "Market Gaps",        icon: ScanLine },
-      { id: "ideas",         label: "Idea Intelligence",  icon: Lightbulb },
-    ],
-  },
-  {
-    title: "GROW",
-    key: "grow",
-    items: [
-      { id: "outreach",      label: "Auto-Outreach",      icon: Mail },
-      { id: "revenueagent",  label: "Revenue Agent",      icon: BotIcon },
-      { id: "templates",     label: "Email Templates",    icon: Mail },
-    ],
-  },
-  {
-    title: "PLAN & REFLECT",
-    key: "plan",
-    items: [
-      { id: "session",       label: "Session Brain",      icon: Clock },
-      { id: "focus",         label: "Focus Mode",         icon: Zap },
-      { id: "meetings",      label: "Meeting Prep",       icon: Briefcase },
-      { id: "decisions",     label: "Decision Journal",   icon: JournalIcon },
-      { id: "energy",        label: "Energy Tracker",     icon: Activity },
-      { id: "weeklyreview",  label: "Weekly Review",      icon: CalendarDays },
-    ],
-  },
-  {
-    title: "LIBRARY",
-    key: "library",
-    items: [
-      { id: "knowledge",     label: "Knowledge Base",     icon: BookOpen },
-      { id: "sops",          label: "SOPs & Playbooks",   icon: ClipboardList },
-      { id: "portfolio",     label: "Wins & Portfolio",   icon: Star },
-    ],
-  },
-  {
-    title: "REPORTS",
-    key: "reports",
-    items: [
-      { id: "reports",       label: "Weekly Report",      icon: BarChart2 },
-      { id: "investor",      label: "Investor View",      icon: LineChart },
-    ],
-  },
-  {
-    title: "LABS",
-    key: "labs",
-    items: [
-      { id: "hackathon",     label: "Hackathon Builder",  icon: Code2 },
-      { id: "scout",         label: "Auto-Scout",         icon: Radar },
-      { id: "skills",        label: "Skill Engine",       icon: Bot },
-      { id: "away",          label: "Away Mode",          icon: Plane },
-      { id: "scheduler",     label: "Scheduler",          icon: Calendar },
+      { id: "research", label: "Research", icon: Search },
     ],
   },
   {
     title: "SYSTEM",
     key: "system",
     items: [
-      { id: "notifications", label: "Notifications",      icon: Bell },
-      { id: "optimizer",     label: "Cost Optimizer",     icon: TrendingUp },
-      { id: "export",        label: "Data Export",        icon: Download },
-      { id: "team",          label: "Team",               icon: Users, soon: true },
-      { id: "settings",      label: "Settings",           icon: Settings },
+      { id: "settings", label: "Settings", icon: Settings },
     ],
   },
 ];
 
-// Sections expanded on first load — the daily-core surfaces only.
-const DEFAULT_EXPANDED = ["core", "money", "intelligence"];
+// Everything is shown by default — the whole OS now fits without collapsing.
+const DEFAULT_EXPANDED = ["core", "money", "market", "system"];
 
 // Find which section contains the active module
 function findSectionForModule(moduleId: string): string | null {
@@ -382,9 +321,11 @@ export default function Sidebar({ activeModule, onModuleChange, unreadNotificati
           </button>
         </div>
         {renderNav(false)}
-        <div className="px-4 py-3 border-t border-neutral-800">
-          <div className="text-xs text-neutral-700 font-mono">Freetown, SL</div>
-        </div>
+        {getBrain()?.location && (
+          <div className="px-4 py-3 border-t border-neutral-800">
+            <div className="text-xs text-neutral-700 font-mono">{getBrain()?.location}</div>
+          </div>
+        )}
       </div>
 
       {/* ── Desktop sidebar ── */}
@@ -403,8 +344,8 @@ export default function Sidebar({ activeModule, onModuleChange, unreadNotificati
           >
             {collapsed ? <PanelLeft className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
           </button>
-          {!collapsed && (
-            <span className="text-xs text-neutral-700 font-mono ml-2 flex-1 truncate">Freetown, SL</span>
+          {!collapsed && getBrain()?.location && (
+            <span className="text-xs text-neutral-700 font-mono ml-2 flex-1 truncate">{getBrain()?.location}</span>
           )}
         </div>
       </div>

@@ -9,8 +9,7 @@ import { complete, getActiveProvider } from "./llm";
 import { seedAutoResearchLive } from "./auto-research";
 import { saveBrain, getDefaultBrain, getBrain } from "./founder-brain";
 import { getSeedStatus, setSeedStatus } from "./seed-scan-store";
-import { getCompetitorReports } from "./competitor-intelligence";
-import { getMarketGaps } from "./market-gap-scanner";
+import { getLibrary } from "./research-storage";
 
 const VALID = JSON.stringify({
   competitors: [
@@ -34,15 +33,16 @@ describe("seedAutoResearchLive", () => {
     expect(getSeedStatus().phase).toBe("needs-key");
   });
 
-  it("runs a real scan, writes reports + gaps, and marks the brain seeded", async () => {
+  it("runs a real scan, saves a research report, and marks the brain seeded", async () => {
     vi.mocked(getActiveProvider).mockReturnValue({ provider: "claude", apiKey: "k" });
     vi.mocked(complete).mockResolvedValue(VALID);
 
     await seedAutoResearchLive();
 
     expect(getSeedStatus()).toEqual({ phase: "found", competitors: 1, gaps: 1 });
-    expect(getCompetitorReports()).toHaveLength(1);
-    expect(getMarketGaps()).toHaveLength(1);
+    const library = getLibrary();
+    expect(library).toHaveLength(1);
+    expect(library[0].keyFindings.length).toBe(2); // 1 competitor + 1 gap
     expect(getBrain()?.seededAt).toBeTruthy();
   });
 

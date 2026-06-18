@@ -10,7 +10,7 @@ describe("detectSignalsLive", () => {
     vi.mocked(buildFounderContext).mockReturnValue({
       company: null,
       burn: { runwayMonths: 2, monthlyBurn: 5000, monthlyRevenue: 0, isProfitable: false },
-      deals: null, goals: null, energy: null, decisions: null, weekly: null, market: null,
+      deals: null, goals: null,
     });
     const nudges = detectSignalsLive();
     expect(nudges.find((n) => n.id === "runway")).toBeDefined();

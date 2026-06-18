@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Search, Loader2, CheckCircle, Circle, BookOpen, Trash2, ExternalLink, ChevronDown, ChevronUp, Zap, AlertTriangle, X } from "lucide-react";
 import { runResearch, type ResearchReport, type ResearchStep } from "@/lib/research-engine";
 import { saveReport, getLibrary, deleteReport, searchLibrary } from "@/lib/research-storage";
-import { getStoredAnthropicKey } from "@/lib/skill-engine";
+import { getStoredAnthropicKey } from "@/lib/llm";
 
 const CREDIBILITY_COLORS: Record<string, string> = {
   very_high: "text-emerald-400 bg-emerald-400/10 border-emerald-400/30",

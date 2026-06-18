@@ -21,7 +21,6 @@ export interface Nudge {
 }
 
 const RUNWAY_ALERT_MONTHS = 4;
-const LOW_ENERGY_THRESHOLD = 2.5;
 
 const SEVERITY_RANK: Record<NudgeSeverity, number> = { high: 0, medium: 1, low: 2 };
 
@@ -55,36 +54,6 @@ export function detectSignals(ctx: FounderContext): Nudge[] {
       message: `${ctx.goals.atRisk} of your goals are at risk. Worth a look before they slip.`,
       actionLabel: "Review goals",
       targetModule: "goals",
-    });
-  }
-
-  if (ctx.energy && ctx.energy.avgEnergy < LOW_ENERGY_THRESHOLD) {
-    nudges.push({
-      id: "low-energy",
-      severity: "medium",
-      message: `Your energy's been low (${ctx.energy.avgEnergy}/5). Protect your peak hours and rest.`,
-      actionLabel: "Check energy patterns",
-      targetModule: "energy",
-    });
-  }
-
-  if (ctx.weekly && ctx.weekly.streak === 0) {
-    nudges.push({
-      id: "no-weekly",
-      severity: "low",
-      message: "You haven't closed out a weekly review lately. Five minutes keeps the compass true.",
-      actionLabel: "Do weekly review",
-      targetModule: "weeklyreview",
-    });
-  }
-
-  if (ctx.market && ctx.market.gaps > 0) {
-    nudges.push({
-      id: "market-gaps",
-      severity: "low",
-      message: `${ctx.market.gaps} market gap${ctx.market.gaps === 1 ? "" : "s"} in your space worth exploring.`,
-      actionLabel: "See market gaps",
-      targetModule: "marketgaps",
     });
   }
 

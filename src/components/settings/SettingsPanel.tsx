@@ -12,9 +12,39 @@ import {
 } from "@/lib/supabase";
 import {
   getPreferredProvider, setPreferredProvider,
+  getStoredAnthropicKey, setStoredAnthropicKey,
+  getStoredGoogleKey, setStoredGoogleKey,
+  getStoredNvidiaKey, setStoredNvidiaKey,
   type AIProvider
 } from "@/lib/llm";
 import { checkEnv } from "@/lib/checks";
+
+function ApiKeyInput({ label, hint, value, onChange }: {
+  label: string; hint: string; value: string; onChange: (v: string) => void;
+}) {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="py-2">
+      <div className="flex items-center justify-between mb-1">
+        <label className="text-xs font-bold text-neutral-300">{label}</label>
+        <span className="text-xs text-neutral-600">{hint}</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <input
+          type={show ? "text" : "password"}
+          autoComplete="off"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="Paste your key…"
+          className="flex-1 bg-neutral-950 border border-neutral-800 rounded-lg px-3 py-2 text-xs font-mono text-neutral-200 placeholder:text-neutral-700 focus:outline-none focus:border-amber-400/40 transition-colors"
+        />
+        <button type="button" onClick={() => setShow(!show)} className="text-neutral-600 hover:text-neutral-300 transition-colors p-1.5" aria-label={show ? "Hide" : "Show"}>
+          {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+        </button>
+      </div>
+    </div>
+  );
+}
 
 function StatusDot({ ok }: { ok: boolean }) {
   return (
@@ -71,6 +101,9 @@ export default function SettingsPanel() {
   const [googleConfigured, setGoogleConfigured] = useState<boolean | null>(null);
   const [nvidiaConfigured, setNvidiaConfigured] = useState<boolean | null>(null);
   const [preferredProvider, setPreferredProviderState] = useState<AIProvider>("claude");
+  const [anthropicKey, setAnthropicKey] = useState(() => getStoredAnthropicKey() ?? "");
+  const [googleKey, setGoogleKey] = useState(() => getStoredGoogleKey() ?? "");
+  const [nvidiaKey, setNvidiaKey] = useState(() => getStoredNvidiaKey() ?? "");
 
   useEffect(() => {
     checkEnv()
@@ -180,8 +213,18 @@ export default function SettingsPanel() {
           </div>
 
           <div className="mt-4 pt-4 border-t border-neutral-800">
+            <p className="text-xs font-bold text-neutral-400 mb-1">Your API keys (stored on this device)</p>
+            <p className="text-xs text-neutral-600 mb-2">
+              Bring your own key — stored only in this browser/app, never uploaded. On the desktop app, calls go straight to the provider.
+            </p>
+            <ApiKeyInput label="Anthropic (Claude)" hint="console.anthropic.com" value={anthropicKey} onChange={(v) => { setAnthropicKey(v); setStoredAnthropicKey(v); }} />
+            <ApiKeyInput label="NVIDIA (free models)" hint="build.nvidia.com" value={nvidiaKey} onChange={(v) => { setNvidiaKey(v); setStoredNvidiaKey(v); }} />
+            <ApiKeyInput label="Google (Gemini)" hint="aistudio.google.com" value={googleKey} onChange={(v) => { setGoogleKey(v); setStoredGoogleKey(v); }} />
+          </div>
+
+          <div className="mt-4 pt-4 border-t border-neutral-800">
             <p className="text-xs font-bold text-neutral-400 mb-2">Preferred AI provider</p>
-            <p className="text-xs text-neutral-600 mb-2">All AI calls go through the server-side proxy. Keys are read from .env.local — never exposed to the browser.</p>
+            <p className="text-xs text-neutral-600 mb-2">Pick which provider to use. Your keys above are used directly; on web, server <code>.env.local</code> keys also work as a fallback.</p>
             <div className="flex gap-2">
               <button
                 type="button"

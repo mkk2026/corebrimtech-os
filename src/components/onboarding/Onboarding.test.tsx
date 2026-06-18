@@ -35,7 +35,7 @@ describe("Onboarding", () => {
 
     await user.click(screen.getByRole("button", { name: /let.s go/i }));
     await user.click(screen.getByRole("button", { name: /next/i })); // founder → company
-    await user.type(screen.getByLabelText(/company name/i), "Core Brim Tech");
+    await user.type(screen.getByLabelText(/company name/i), "Acme Inc");
     await user.click(screen.getByRole("button", { name: /next/i })); // company → stage
     await user.click(screen.getByRole("button", { name: /next/i })); // stage → connect
     await user.type(screen.getByLabelText(/anthropic api key/i), "sk-ant-test");
@@ -43,7 +43,7 @@ describe("Onboarding", () => {
 
     expect(getStoredAnthropicKey()).toBe("sk-ant-test");
     expect(seedAutoResearchLive).toHaveBeenCalledOnce();
-    expect(getBrain()?.companyName).toBe("Core Brim Tech");
+    expect(getBrain()?.companyName).toBe("Acme Inc");
 
     await user.click(screen.getByRole("button", { name: /launch my os/i }));
     expect(onComplete).toHaveBeenCalledOnce();
