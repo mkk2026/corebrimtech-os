@@ -29,24 +29,8 @@ export function isSupabaseConfigured(): boolean {
 
 export type TableName =
   | "founder_brain"
-  | "sessions"
-  | "tasks"
-  | "decisions"
-  | "ideas"
   | "goals"
-  | "grants"
-  | "clients"
-  | "revenue"
-  | "hackathon_projects"
-  | "hackathon_listings"
-  | "competitor_reports"
-  | "research_library"
-  | "wins"
-  | "knowledge_base"
-  | "sops"
-  | "notifications"
-  | "templates"
-  | "scheduler";
+  | "research_library";
 
 // ── CORE DB OPERATIONS ────────────────────────────────────────────────────────
 
@@ -182,24 +166,8 @@ export function setSyncStatus(updates: Partial<SyncStatus>): void {
 
 // Map of table → localStorage key
 const TABLE_TO_LOCALSTORAGE: Partial<Record<TableName, string>> = {
-  sessions:            "cbt_os_sessions",
-  tasks:               "cbt_os_tasks",
-  decisions:           "cbt_os_decisions",
-  ideas:               "cbt_os_ideas",
-  goals:               "cbt_os_goals",
-  grants:              "cbt_os_grants",
-  clients:             "cbt_os_clients",
-  revenue:             "cbt_os_revenue",
-  hackathon_projects:  "cbt_os_hackathon_projects",
-  hackathon_listings:  "cbt_os_hackathon_listings",
-  competitor_reports:  "cbt_os_competitor_reports",
-  research_library:    "cbt_os_research_library",
-  wins:                "cbt_os_wins",
-  knowledge_base:      "cbt_os_knowledge_base",
-  sops:                "cbt_os_sops",
-  notifications:       "cbt_os_notifications",
-  templates:           "cbt_os_templates",
-  scheduler:           "cbt_os_scheduler",
+  goals:            "cbt_os_goals",
+  research_library: "cbt_os_research_library",
 };
 
 /**

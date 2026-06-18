@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Cpu, Target, Flame, TrendingUp, Search, ArrowRight, Bot } from "lucide-react";
 import { getBrain } from "@/lib/founder-brain";
 import { getBurnStats } from "@/lib/burn-rate";
@@ -19,19 +19,13 @@ function formatMoney(n: number): string {
 }
 
 export default function HomeCommand({ onNavigate }: HomeCommandProps) {
-  const [brain, setBrain] = useState(() => getBrain());
-  const [burn, setBurn] = useState(() => getBurnStats());
-  const [pipeline, setPipeline] = useState(() => getPipelineStats());
-  const [goals, setGoals] = useState(() => getGoalStats());
-  const [researchCount, setResearchCount] = useState(0);
-
-  useEffect(() => {
-    setBrain(getBrain());
-    setBurn(getBurnStats());
-    setPipeline(getPipelineStats());
-    setGoals(getGoalStats());
-    setResearchCount(getLibrary().length);
-  }, []);
+  // The component remounts on each navigation, so lazy initializers already load fresh data —
+  // no follow-up effect needed (it only re-read the same values).
+  const [brain] = useState(() => getBrain());
+  const [burn] = useState(() => getBurnStats());
+  const [pipeline] = useState(() => getPipelineStats());
+  const [goals] = useState(() => getGoalStats());
+  const [researchCount] = useState(() => getLibrary().length);
 
   const founderName = brain?.founders?.[0]?.name?.split(" ")[0] ?? "";
   const companyName = brain?.companyName ?? "";
