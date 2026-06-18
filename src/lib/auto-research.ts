@@ -19,8 +19,8 @@ import { z } from "zod";
 import type { SeedStatus } from "./seed-scan-store";
 import { getSeedStatus, setSeedStatus } from "./seed-scan-store";
 import { complete, getActiveProvider } from "./llm";
-import { saveReport, type CompetitorReport } from "./competitor-intelligence";
-import { addMarketGap } from "./market-gap-scanner";
+import { saveReport } from "./research-storage";
+import type { ResearchReport } from "./research-engine";
 import { getBrain, saveBrain } from "./founder-brain";
 import { isFeatureEnabled } from "./feature-flags";
 
@@ -120,31 +120,7 @@ function extractJson(text: string): string {
   return text;
 }
 
-function toReport(c: z.infer<typeof scanSchema>["competitors"][number]): CompetitorReport {
-  const now = new Date().toISOString();
-  return {
-    id: `report_${Date.now()}_${Math.random().toString(36).slice(2)}`,
-    competitorId: `comp_${Date.now()}_${Math.random().toString(36).slice(2)}`,
-    competitorName: c.name,
-    generatedAt: now,
-    recentReleases: [],
-    pricingChanges: [],
-    teamChanges: [],
-    marketingMoves: [],
-    fundingNews: [],
-    currentStrengths: c.strengths,
-    currentWeaknesses: c.weaknesses,
-    threatAssessment: c.threatAssessment,
-    counterStrategies: [],
-    opportunities: [],
-    warnings: [],
-    overallSummary: c.description,
-    sourcesChecked: 0,
-    confidenceScore: 50,
-  };
-}
-
-/** Production scan: one focused LLM call, validated, mapped into real reports/gaps. */
+/** Production scan: one focused LLM call, validated, saved as a single Research report. */
 async function runScanLive(
   company: SeedCompany,
   onProgress: (message: string) => void,
@@ -167,33 +143,31 @@ async function runScanLive(
     throw new Error("Could not read the research results. Try again.");
   }
 
-  let competitors = 0;
-  for (const c of parsed.competitors) {
-    onProgress(`Found competitor: ${c.name}`);
-    saveReport(toReport(c));
-    competitors++;
-  }
+  parsed.competitors.forEach((c) => onProgress(`Found competitor: ${c.name}`));
+  parsed.gaps.forEach((g) => onProgress(`Spotted a gap: ${g.title}`));
 
-  let gaps = 0;
-  for (const g of parsed.gaps) {
-    onProgress(`Spotted a gap: ${g.title}`);
-    addMarketGap({
-      title: g.title,
-      description: g.description,
-      category: "unmet_need",
-      source: "manual",
-      urgency: "emerging",
-      evidence: g.evidence,
-      volume: 50,
-      sentiment: "neutral",
-      keywords: g.keywords,
-      relatedToProduct: true,
-      fitScore: 60,
-    });
-    gaps++;
-  }
+  const keyFindings = [
+    ...parsed.competitors.map((c) => `Competitor — ${c.name}: ${c.description || c.threatAssessment}`.trim()),
+    ...parsed.gaps.map((g) => `Market gap — ${g.title}: ${g.description}`.trim()),
+  ];
 
-  return { competitors, gaps };
+  const report: ResearchReport = {
+    id: `research_${Date.now()}_${Math.random().toString(36).slice(2)}`,
+    topic: `Market scan: ${company.name}`,
+    summary: `Auto-generated on first run from your company profile: ${parsed.competitors.length} competitor(s) and ${parsed.gaps.length} market gap(s) identified.`,
+    keyFindings,
+    sources: [],
+    steps: [],
+    createdAt: new Date().toISOString(),
+    depth: 1,
+    subQueries: [],
+    categories: ["Competitors", "Market gaps"],
+    totalPagesRead: 0,
+    gapQueriesResolved: parsed.gaps.length,
+  };
+  saveReport(report);
+
+  return { competitors: parsed.competitors.length, gaps: parsed.gaps.length };
 }
 
 /** Fire-and-forget entrypoint called when onboarding completes. */

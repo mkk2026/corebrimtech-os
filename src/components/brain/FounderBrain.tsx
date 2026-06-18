@@ -201,12 +201,12 @@ function SetupWizard({ onComplete }: { onComplete: () => void }) {
 
           {step === 0 && (
             <>
-              <Input label="Company Name" value={brain.companyName} onChange={v => updateBrain({ companyName: v })} placeholder="Core Brim Tech" />
+              <Input label="Company Name" value={brain.companyName} onChange={v => updateBrain({ companyName: v })} placeholder="Acme Inc" />
               <Input label="Tagline" value={brain.companyTagline} onChange={v => updateBrain({ companyTagline: v })} placeholder="What you do in one line" />
               <Textarea label="Mission" value={brain.companyMission} onChange={v => updateBrain({ companyMission: v })} placeholder="Why does your company exist?" rows={2} />
               <Textarea label="Vision" value={brain.companyVision} onChange={v => updateBrain({ companyVision: v })} placeholder="The big dream. Where are you going in 10 years?" rows={3} />
               <Input label="Founded Date" value={brain.foundedDate} onChange={v => updateBrain({ foundedDate: v })} type="date" />
-              <Input label="Headquarters" value={brain.location} onChange={v => updateBrain({ location: v })} placeholder="Freetown, Sierra Leone 🇸🇱" />
+              <Input label="Headquarters" value={brain.location} onChange={v => updateBrain({ location: v })} placeholder="City, Country" />
               <div>
                 <label className="text-xs font-mono text-neutral-500 uppercase tracking-wider block mb-1.5">Company Stage</label>
                 <div className="grid grid-cols-3 gap-2">
@@ -219,7 +219,7 @@ function SetupWizard({ onComplete }: { onComplete: () => void }) {
                 </div>
               </div>
               <TagInput label="Core Values" tags={brain.coreValues} onChange={v => updateBrain({ coreValues: v })} placeholder="e.g. Ship fast, Community first..." />
-              <TagInput label="Target Markets" tags={brain.targetMarkets} onChange={v => updateBrain({ targetMarkets: v })} placeholder="e.g. West Africa, Sierra Leone devs..." />
+              <TagInput label="Target Markets" tags={brain.targetMarkets} onChange={v => updateBrain({ targetMarkets: v })} placeholder="e.g. SMBs, developers, US market..." />
             </>
           )}
 
@@ -239,7 +239,7 @@ function SetupWizard({ onComplete }: { onComplete: () => void }) {
                     <Input label="Role" value={f.role} onChange={v => updateFounder(i, { role: v })} placeholder="CEO & Founder" />
                   </div>
                   <Input label="Email" value={f.email} onChange={v => updateFounder(i, { email: v })} placeholder="you@company.com" type="email" />
-                  <Input label="Location" value={f.location} onChange={v => updateFounder(i, { location: v })} placeholder="Freetown, Sierra Leone" />
+                  <Input label="Location" value={f.location} onChange={v => updateFounder(i, { location: v })} placeholder="City, Country" />
                   <Textarea label="Bio" value={f.bio} onChange={v => updateFounder(i, { bio: v })} placeholder="Who are you? What's your background?" rows={3} />
                   <TagInput label="Skills" tags={f.skills} onChange={v => updateFounder(i, { skills: v })} placeholder="e.g. React, Next.js, Python..." />
                   <TagInput label="Strengths" tags={f.strengths} onChange={v => updateFounder(i, { strengths: v })} placeholder="e.g. Product vision, Community building..." />

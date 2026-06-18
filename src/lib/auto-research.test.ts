@@ -12,7 +12,7 @@ function makeDeps(overrides: Partial<SeedAutoResearchDeps> = {}): {
     isEnabled: () => true,
     alreadySeeded: () => false,
     hasKey: () => true,
-    getCompany: () => ({ name: "Core Brim Tech", tagline: "OS for founders" }),
+    getCompany: () => ({ name: "Acme Inc", tagline: "OS for founders" }),
     markSeeded,
     emit,
     runScan: vi.fn(async () => ({ competitors: 3, gaps: 2 })),

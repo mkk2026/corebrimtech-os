@@ -32,6 +32,13 @@ export function getStoredGoogleKey(): string | undefined {
   return k && k.trim() ? k : undefined;
 }
 
+export function setStoredGoogleKey(key: string): void {
+  if (typeof window === "undefined") return;
+  const trimmed = key.trim();
+  if (trimmed) localStorage.setItem(GOOGLE_KEY_STORAGE, trimmed);
+  else localStorage.removeItem(GOOGLE_KEY_STORAGE);
+}
+
 export function getStoredNvidiaKey(): string | undefined {
   if (typeof window === "undefined") return undefined;
   const k = localStorage.getItem(NVIDIA_KEY_STORAGE);

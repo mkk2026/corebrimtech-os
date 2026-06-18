@@ -188,7 +188,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   type="text"
                   value={founderName}
                   onChange={(e) => setFounderName(e.target.value)}
-                  placeholder="e.g. Momodu Kamara"
+                  placeholder="e.g. Jane Doe"
                   className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-4 py-3 text-sm text-neutral-200 placeholder:text-neutral-700 focus:outline-none focus:border-amber-400/40 transition-colors"
                   autoFocus
                 />
@@ -253,7 +253,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   type="text"
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
-                  placeholder="e.g. Core Brim Tech"
+                  placeholder="e.g. Acme Inc"
                   className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-4 py-3 text-sm text-neutral-200 placeholder:text-neutral-700 focus:outline-none focus:border-amber-400/40 transition-colors"
                   autoFocus
                 />

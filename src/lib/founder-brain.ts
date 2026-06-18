@@ -1,5 +1,5 @@
 // CORE BRIM TECH OS — Founder Brain
-// The persistent intelligence layer that knows everything about Core Brim Tech
+// The persistent intelligence layer that knows everything about the founder's company.
 
 export interface Founder {
   id: string;
@@ -107,12 +107,12 @@ export function saveBrain(brain: FounderBrain): void {
 
 export function getDefaultBrain(): FounderBrain {
   return {
-    companyName: "Core Brim Tech",
+    companyName: "",
     companyTagline: "",
     companyMission: "",
     companyVision: "",
     foundedDate: "",
-    location: "Freetown, Sierra Leone 🇸🇱",
+    location: "",
     stage: "mvp",
     founders: [],
     products: [],
