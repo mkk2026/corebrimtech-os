@@ -110,7 +110,7 @@ async function completeWithClaude(_apiKey: string, opts: LLMCompleteOptions): Pr
       throw new Error(msg);
     }
     const text = (data as { content?: { type: string; text?: string }[] })?.content?.[0]?.text;
-    if (!text) throw new Error("Invalid API response: no content");
+    if (!text?.trim()) throw new Error("Invalid API response: no content");
     return text;
   } catch (e) {
     clearTimeout(id);
@@ -138,7 +138,7 @@ async function completeWithGoogle(_apiKey: string, opts: LLMCompleteOptions): Pr
       throw new Error(msg);
     }
     const text = (data as { content?: { type: string; text?: string }[] })?.content?.[0]?.text;
-    if (text == null) throw new Error("Invalid API response: no content");
+    if (!text?.trim()) throw new Error("Invalid API response: no content");
     return text;
   } catch (e) {
     clearTimeout(id);
@@ -168,7 +168,7 @@ async function completeWithNvidia(_apiKey: string, opts: LLMCompleteOptions): Pr
     }
     // The proxy / native bridge normalizes NVIDIA's OpenAI shape to the Claude-like content array.
     const text = (data as { content?: { type: string; text?: string }[] })?.content?.[0]?.text;
-    if (text == null) throw new Error("Invalid API response: no content");
+    if (!text?.trim()) throw new Error("Invalid API response: no content");
     return text;
   } catch (e) {
     clearTimeout(id);
