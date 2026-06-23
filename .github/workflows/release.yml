@@ -63,15 +63,19 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # macOS signing + notarization — active ONLY when these repo secrets are set.
-          # When unset they resolve to empty strings and tauri-action builds unsigned (current behavior).
-          # See SIGNING.md for how to acquire the certificate and create these secrets.
-          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
-          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          # macOS signing + notarization — OPT-IN. Apple secrets are passed ONLY when the repo
+          # variable APPLE_SIGNING_ENABLED == "true". Otherwise they resolve to empty strings and
+          # tauri-action builds UNSIGNED. This guards against a half-configured/placeholder
+          # APPLE_CERTIFICATE secret crashing the macOS bundle at the codesign step
+          # (`security import: failed to import keychain certificate`) — it builds unsigned instead.
+          # To enable signing: acquire the cert (see SIGNING.md), add the secrets below, then set
+          # the repo variable APPLE_SIGNING_ENABLED=true.
+          APPLE_CERTIFICATE: ${{ vars.APPLE_SIGNING_ENABLED == 'true' && secrets.APPLE_CERTIFICATE || '' }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ vars.APPLE_SIGNING_ENABLED == 'true' && secrets.APPLE_CERTIFICATE_PASSWORD || '' }}
+          APPLE_SIGNING_IDENTITY: ${{ vars.APPLE_SIGNING_ENABLED == 'true' && secrets.APPLE_SIGNING_IDENTITY || '' }}
+          APPLE_ID: ${{ vars.APPLE_SIGNING_ENABLED == 'true' && secrets.APPLE_ID || '' }}
+          APPLE_PASSWORD: ${{ vars.APPLE_SIGNING_ENABLED == 'true' && secrets.APPLE_PASSWORD || '' }}
+          APPLE_TEAM_ID: ${{ vars.APPLE_SIGNING_ENABLED == 'true' && secrets.APPLE_TEAM_ID || '' }}
         with:
           tagName: ${{ github.ref_name }}
           releaseName: "CoreBrimTech OS ${{ github.ref_name }}"
